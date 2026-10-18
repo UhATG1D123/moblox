@@ -11,11 +11,18 @@ export class PartialDatabase {
 		this.name_ = name.toLowerCase();
 		this.username_ = username;
 		this.connected_ = false;
+		// Connection settings come from env vars (set these in Render), with the old local values as fallbacks.
+		const useSsl = (process.env.DB_SSL || '').toLowerCase() === 'true';
+		this.username_ = process.env.DB_USER || username;
 		this.connection_ = createConnection({
-			host: 'localhost',
-			user: username,
-			password: password,
-			database: name,
+			host: process.env.DB_HOST || 'localhost',
+			port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
+			user: this.username_,
+			password: process.env.DB_PASSWORD || password,
+			// Database names are lowercase in SQL/setup.sql; Linux MySQL is case-sensitive.
+			database: name.toLowerCase(),
+			connectTimeout: 10000, // fail fast instead of hanging forever
+			ssl: useSsl ? { minVersion: 'TLSv1.2', rejectUnauthorized: true } : undefined,
 		});
 	}
 
