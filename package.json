@@ -8,7 +8,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "build": "node path.js && tsc -b --verbose",
+    "build": "node rename-hosts.js && node path.js && tsc -b --verbose",
     "start": "node --no-deprecation Source/Bin/Global.asax.js",
     "start:test": "node --no-deprecation Source/Bin/Global.asax.js --closure-after-seconds",
     "test": "jest --verbose --detectOpenHandles"
