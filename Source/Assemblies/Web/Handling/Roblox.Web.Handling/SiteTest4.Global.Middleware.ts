@@ -53,12 +53,13 @@ export const GlobalMiddleware = ((request, response, nextExecutingContext) => {
 		);
 	// TODO Move this to it's own middleware.
 	if (
-		(request.path.toLowerCase() !== '/login/maintenance' &&
+		!process.env.PORT &&
+		((request.path.toLowerCase() !== '/login/maintenance' &&
 			request.hostname !== 'apis.sitetest4.robloxlabs.com' &&
 			request.hostname !== 'ecsv2.sitetest4.robloxlabs.com' &&
 			request.hostname !== 'metrics.sitetest4.robloxlabs.com' &&
 			!request.path.startsWith('/js')) ||
-		DFFlag('NoMaintenance')
+		DFFlag('NoMaintenance'))
 	) {
 		const cookie = KeyValueMapping.GetValueFromCookieString('RobloxSecurityToken', request.headers.cookie);
 		if (
