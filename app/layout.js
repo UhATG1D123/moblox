@@ -1,26 +1,29 @@
 import './globals.css';
+import { getSession, restriction } from '@/lib/session';
+import Sidebar from '@/components/Sidebar';
+import Topbar from '@/components/Topbar';
 
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Moblox', description: 'Moblox - an independent avatar shop community' };
 
-const nav = ['Home', 'Profile', 'Messages', 'Friends', 'Avatar', 'Inventory', 'Trade', 'Catalog'];
-
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const { me, isStaff } = await getSession();
+  const r = restriction(me);
   return (
     <html lang="en">
       <body>
-        <header className="top">
-          <div className="logo">MOBLOX</div>
-          <a href="/">Charts</a><a href="/catalog">Marketplace</a><a href="/">Create</a>
-          <input className="search" placeholder="Search" />
-          <span className="bal">Demo coins: --</span>
-        </header>
+        <Topbar me={me} />
         <div className="shell">
-          <aside className="side">
-            {nav.map((n) => (
-              <a key={n} href={n === 'Catalog' ? '/catalog' : '/'}>{n}</a>
-            ))}
-          </aside>
-          <main className="main">{children}</main>
+          <Sidebar me={me} isStaff={isStaff} />
+          <main className="main">
+            {r === 'banned' && <div className="banner bad">Your account has been banned. You can browse, but you cannot buy items.</div>}
+            {r === 'suspended' && (
+              <div className="banner bad">
+                Your account is suspended{me.status_until ? ` until ${new Date(me.status_until).toUTCString()}` : ''}. You cannot buy items right now.
+              </div>
+            )}
+            {children}
+          </main>
         </div>
       </body>
     </html>
