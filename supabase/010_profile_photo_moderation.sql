@@ -89,6 +89,7 @@ using (
   bucket_id = 'profile-photos'
   and (
     exists (select 1 from public.profiles p where p.avatar_path = name)
+    or (auth.uid() is not null and (storage.foldername(name))[1] = auth.uid()::text)
     or (
       auth.uid() is not null
       and exists (
