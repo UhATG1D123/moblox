@@ -8,10 +8,10 @@ import AcknowledgeWarnings from '@/components/AcknowledgeWarnings';
 const utc = (value) => value ? new Date(value).toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC') : 'Not available';
 
 export default async function NotApproved() {
-  const { me, restriction, restrictionError, warnings } = await getSession();
+  const { me, restriction, restrictionError, warnings, warningError } = await getSession();
   if (!me) redirect('/login');
-  if (restrictionError) {
-    return <section className="restriction-card"><p className="eyebrow">Account status</p><h1>We couldn’t verify your account status</h1><p>Moblox could not safely confirm whether your account is in good standing. Access is paused while we retry the check. This does not mean your account has been banned.</p><RetryRestrictionCheck /><form action="/auth/signout" method="post"><button className="btn" type="submit">Log out</button></form></section>;
+  if (restrictionError || warningError) {
+    return <section className="restriction-card"><p className="eyebrow">Account status</p><h1>We couldn’t verify your account status</h1><p>Moblox could not safely confirm your account status. Access is paused while we retry the check. This does not mean your account has been banned.</p><RetryRestrictionCheck /><form action="/auth/signout" method="post"><button className="btn" type="submit">Log out</button></form></section>;
   }
   if (!restriction && warnings.length > 0) return <AcknowledgeWarnings warnings={warnings} />;
   if (!restriction) return <section className="restriction-card"><p className="eyebrow">Account status</p><h1>Your account is in good standing</h1><p>No active account restriction was found. You can return to Moblox.</p><Link className="btn primary" href="/">Return to Moblox</Link></section>;
