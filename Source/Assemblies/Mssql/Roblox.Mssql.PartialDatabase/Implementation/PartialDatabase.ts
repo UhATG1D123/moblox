@@ -8,7 +8,7 @@ export class PartialDatabase {
 	private connection_: Connection;
 	private connected_: boolean;
 	public constructor(name: string, username: string, password: string) {
-		this.name_ = name.toLowerCase();
+		this.name_ = (process.env['DB_NAME'] || name).toLowerCase();
 		this.username_ = username;
 		this.connected_ = false;
 		// Render / TiDB Cloud: read the connection settings from environment variables,
