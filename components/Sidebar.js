@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, User, Users, Package, Store, Settings, ShieldCheck } from 'lucide-react';
+import ProfileAvatar from './ProfileAvatar';
 
 export default function Sidebar({ me, isStaff }) {
   const path = usePathname();
@@ -20,7 +21,7 @@ export default function Sidebar({ me, isStaff }) {
   return (
     <aside className="side">
       {me && (
-        <div className="sidehead"><span className="av sm">{me.username[0].toUpperCase()}</span><b>{me.username}</b></div>
+        <div className="sidehead"><ProfileAvatar userId={me.id} username={me.username} /><b>{me.username}</b></div>
       )}
       {items.map(({ href, label, Icon }) => (
         <Link key={href} href={href} className={active(href) ? 'on' : ''}>
