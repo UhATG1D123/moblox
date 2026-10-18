@@ -25,7 +25,7 @@ export async function middleware(request) {
       return redirect;
     }
     const { data: warnings, error: warningError } = await supabase.rpc('my_unacknowledged_warnings');
-    if (!warningError && Array.isArray(warnings) && warnings.length > 0) {
+    if (warningError || (Array.isArray(warnings) && warnings.length > 0)) {
       const redirect = NextResponse.redirect(new URL('/not-approved', request.url));
       response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
       return redirect;
