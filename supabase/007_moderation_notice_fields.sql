@@ -3,7 +3,7 @@
 -- Preserve the existing four-argument RPC until the new five-argument RPC is verified.
 -- PostgREST selects the five-argument overload when the admin panel sends p_category.
 
-create function public.admin_set_status(
+create or replace function public.admin_set_status(
   p_target bigint,
   p_status text,
   p_hours integer,
