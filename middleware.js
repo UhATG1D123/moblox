@@ -18,10 +18,14 @@ export async function middleware(request) {
   });
   const { data: { user } } = await supabase.auth.getUser();
   if (user && !allowed(request.nextUrl.pathname)) {
-    const { data, error } = await supabase.rpc('my_restriction');
-    // Fail closed if the restriction check cannot be verified. Apply migration 004 before deploying.
-    const blocked = !!data || !!error;
-    if (blocked) {
+    const { data: restriction, error: restrictionError } = await supabase.rpc('my_restriction');
+    if (restrictionError || restriction) {
+      const redirect = NextResponse.redirect(new URL('/not-approved', request.url));
+      response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+      return redirect;
+    }
+    const { data: warnings, error: warningError } = await supabase.rpc('my_unacknowledged_warnings');
+    if (!warningError && Array.isArray(warnings) && warnings.length > 0) {
       const redirect = NextResponse.redirect(new URL('/not-approved', request.url));
       response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
       return redirect;
