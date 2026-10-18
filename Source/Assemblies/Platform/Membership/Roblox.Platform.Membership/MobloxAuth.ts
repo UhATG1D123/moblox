@@ -17,11 +17,6 @@ interface MobloxAccount {
 	CreatedAt: Date;
 }
 
-interface MobloxSession {
-	AccountId: number;
-	ExpiresAt: Date;
-}
-
 function getPool(): Pool {
 	if (!pool) {
 		const host = process.env.DB_HOST;
