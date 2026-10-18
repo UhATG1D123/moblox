@@ -35,34 +35,62 @@ export class User implements IUser {
 	public ChangeUsernameEnabled: boolean;
 	public IsAdmin: boolean;
 
-	private static isConnected: boolean;
-	private static connectionAttemptRunning: boolean;
-	private static db: PartialDatabase;
+	private static isConnected: boolean = false;
+	private static connectionPromise: Promise<boolean> | null = null;
+	private static db: PartialDatabase | null = null;
 
-	private static async connectIfNotConnected(): Task<void> {
-		return new Promise<void>(async (resumeFunction) => {
-			if (!this.connectionAttemptRunning) {
-				this.db = new PartialDatabase('RobloxMembership', '', '');
-				this.connectionAttemptRunning = true;
-				const [didConnect, errMessage] = await this.db.Connect();
-				if (!didConnect) {
-					FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] Error when connecting to DB: %s', errMessage);
-					return false;
+	private static async connectIfNotConnected(): Task<boolean> {
+		if (this.db && this.db.IsConnected) {
+			this.isConnected = true;
+			return true;
+		}
+
+		this.isConnected = false;
+
+		if (this.connectionPromise) {
+			return this.connectionPromise;
+		}
+
+		const Database: PartialDatabase = new PartialDatabase('RobloxMembership', '', '');
+		this.db = Database;
+
+		const ConnectionPromise: Promise<boolean> = (async (): Promise<boolean> => {
+			const [didConnect, errMessage] = await Database.Connect();
+
+			if (!didConnect) {
+				FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] Error when connecting to DB: %s', errMessage);
+
+				if (this.db === Database) {
+					this.db = null;
 				}
-				this.isConnected = didConnect;
-				this.connectionAttemptRunning = false;
-				resumeFunction();
-			} else {
-				do {} while (this.connectionAttemptRunning);
-				resumeFunction();
+
+				this.isConnected = false;
+				return false;
 			}
-		});
+
+			this.isConnected = true;
+			return true;
+		})();
+
+		this.connectionPromise = ConnectionPromise;
+
+		try {
+			return await ConnectionPromise;
+		} finally {
+			if (this.connectionPromise === ConnectionPromise) {
+				this.connectionPromise = null;
+			}
+		}
 	}
 
 	public static async GetByCookie(Cookie: string): Task<IUser> {
-		if (!this.isConnected) await this.connectIfNotConnected();
+		if (!(await this.connectIfNotConnected()) || !this.db) return null;
 
-		const [, , sessions] = this.db.GetTable<ISession>('session', 'Id', true);
+		const [, tableError, sessions] = this.db.GetTable<ISession>('session', 'Id', true);
+		if (!sessions) {
+			FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] Error when opening sessions table: %s', tableError);
+			return null;
+		}
 		const [success, message, result] = await sessions.SelectKeyWhere('UserId', {
 			Key: 'SessionToken',
 			Condition: PartialDatabaseConditionType.Equal,
@@ -84,7 +112,11 @@ export class User implements IUser {
 	 */
 	public static async Get(Id: number): Task<IUser> {
 		if (!this.isConnected) await this.connectIfNotConnected();
-		const [, , users] = this.db.GetTable<IUser>('User', 'Id', true);
+		const [, tableError, users] = this.db.GetTable<IUser>('User', 'Id', true);
+		if (!users) {
+			FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] Error when opening users table: %s', tableError);
+			return null;
+		}
 		const [success, message, result] = await users.SelectKeysWhere(
 			[
 				'Name',
