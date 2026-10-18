@@ -42,11 +42,7 @@ export async function POST(request) {
 
   if (type === 'user') {
     if (targetId === reporter.id) return NextResponse.json({ error: 'You cannot report yourself.' }, { status: 400 });
-    const { data: target, error: targetError } = await sb
-      .from('profiles')
-      .select('id,username')
-      .eq('id', targetId)
-      .maybeSingle();
+    const { data: target, error: targetError } = await sb.rpc('get_public_profile', { p_id: targetId });
     if (targetError || !target) return NextResponse.json({ error: 'User not found.' }, { status: 404 });
     targetUsername = target.username;
     targetLabel = `User @${target.username} (ID ${target.id})`;
@@ -60,7 +56,7 @@ export async function POST(request) {
     if (itemError || !item) return NextResponse.json({ error: 'Item not found.' }, { status: 404 });
     targetLabel = `Item "${item.name}" (ID ${item.id})`;
     if (item.creator_id) {
-      const { data: creator } = await sb.from('profiles').select('username').eq('id', item.creator_id).maybeSingle();
+      const { data: creator } = await sb.rpc('get_public_profile', { p_id: item.creator_id });
       targetUsername = creator?.username || '';
     }
     ({ error: reportError } = await sb.rpc('report_item', { p_item: targetId, p_reason: reason }));
