@@ -101,8 +101,9 @@ export default async function Admin({ searchParams }) {
         <RpcForm title="Suspend / ban / reinstate" rpc="admin_set_status" button="Apply" fields={[
           { name: 'id', param: 'p_target', label: 'User ID', type: 'number', required: true },
           { name: 'status', param: 'p_status', label: 'Status', required: true, options: [{ v: 'suspended', l: 'Suspend' }, { v: 'banned', l: 'Ban' }, ...(isOwner ? [{ v: 'terminated', l: 'Terminate permanently' }] : []), { v: 'active', l: 'Reinstate / unban' }] },
-          { name: 'hours', param: 'p_hours', label: 'Duration in hours (optional; blank = permanent)', type: 'number' },
-          { name: 'reason', param: 'p_reason', label: 'Reason', required: true }]} />
+          { name: 'hours', param: 'p_hours', label: 'Duration in hours (168 = 7 days; blank = no expiry)', type: 'number' },
+          { name: 'category', param: 'p_category', label: 'Rule / category', required: true, options: [{ v: 'Community Guidelines', l: 'Community Guidelines' }, { v: 'Harassment', l: 'Harassment / bullying' }, { v: 'Scamming', l: 'Scamming / fraud' }, { v: 'Spam', l: 'Spam' }, { v: 'Inappropriate Content', l: 'Inappropriate content' }, { v: 'Account Security', l: 'Account security' }, { v: 'Terms of Use', l: 'Terms of Use' }, { v: 'Other', l: 'Other' }] },
+          { name: 'reason', param: 'p_reason', label: 'Moderator note shown to the user', required: true }]} />
         <RpcForm title="Adjust MoBux" rpc="admin_adjust_currency" button="Adjust" fields={[
           { name: 'id', param: 'p_target', label: 'User ID', type: 'number', required: true },
           { name: 'amount', param: 'p_amount', label: 'Amount (negative removes)', type: 'number', required: true },
