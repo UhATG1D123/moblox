@@ -8,7 +8,7 @@ import { InputValidator } from '../../../../../../Assemblies/Web/Util/Roblox.Web
 
 export default {
 	method: 'all',
-	func: (request: Request, response: Response) => {
+	func: (request: Request<{ group: string }>, response: Response) => {
 		const group = WebParsers.SanitizeData(request.params.group);
 		const FSettings = ClientSettings.GetFSettings();
 		FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] ClientSettings QuietGet Settings got group %s.', group);
