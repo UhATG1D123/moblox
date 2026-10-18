@@ -41,7 +41,7 @@ export const GlobalMiddleware = ((request, response, nextExecutingContext) => {
 	const commonValidatorClient = new CommonValidator(response);
 
 	const tracker = KeyValueMapping.GetValuesFromCookieString(['RBXEventTrackerV2', 'RBXEventTracker'], request.headers.cookie);
-	if (!tracker)
+	if (!process.env.PORT && !tracker)
 		response.cookie(
 			'RBXEventTrackerV2',
 			`CreateDate=${DateTimeConverter.DateToLocaleDate(new Date(Date.now()))}&rbxid=&browserid=${1}`, // Keep the browserid as 1 for now.
