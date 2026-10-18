@@ -11,7 +11,7 @@ export default {
 	func: async (request: Request, response: Response, next: NextFunction) => {
 		const securityToken = request.cookies['.ROBLOSECURITY'];
 		if ((await User.GetByCookie(securityToken)) === null) {
-			if (securityToken !== undefined) response.clearCookie('.ROBLOSECURITY', { domain: 'sitetest4.robloxlabs.com' }); // We need them to clear that cookie, this will not be needed when it checks by user, unlike just checking for it's presence...
+			if (securityToken !== undefined) response.clearCookie('.ROBLOSECURITY', { domain: 'moblox.xyz' }); // We need them to clear that cookie, this will not be needed when it checks by user, unlike just checking for it's presence...
 		}
 		/* Session User fetch, use SessionUser.GetOrCreate(IP) -- This will get the user by IP, or will create one with the given IP, IF they have a browser tracker, then try fetch that. */
 		/* For the SessionUser DB, on startup, clear the DB, as these are temp. */
