@@ -13,28 +13,52 @@ export class SessionUser implements ISessionUser {
 	public LanguageCode: System.String;
 	public LanguageName: System.String;
 
-	private static isConnected: boolean;
-	private static connectionAttemptRunning: boolean;
-	private static db: PartialDatabase;
+	private static isConnected: boolean = false;
+	private static connectionPromise: Promise<boolean> | null = null;
+	private static db: PartialDatabase | null = null;
 
-	private static async connectIfNotConnected(): Task<void> {
-		return new Promise<void>(async (resumeFunction) => {
-			if (!this.connectionAttemptRunning) {
-				this.db = new PartialDatabase('RobloxMembership', '', '');
-				this.connectionAttemptRunning = true;
-				const [didConnect, errMessage] = await this.db.Connect();
-				if (!didConnect) {
-					FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] Error when connecting to DB: %s', errMessage);
-					return false;
+	private static async connectIfNotConnected(): Task<boolean> {
+		if (this.db && this.db.IsConnected) {
+			this.isConnected = true;
+			return true;
+		}
+
+		this.isConnected = false;
+
+		if (this.connectionPromise) {
+			return this.connectionPromise;
+		}
+
+		const Database: PartialDatabase = new PartialDatabase('RobloxMembership', '', '');
+		this.db = Database;
+
+		const ConnectionPromise: Promise<boolean> = (async (): Promise<boolean> => {
+			const [didConnect, errMessage] = await Database.Connect();
+
+			if (!didConnect) {
+				FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] Error when connecting to DB: %s', errMessage);
+
+				if (this.db === Database) {
+					this.db = null;
 				}
-				this.isConnected = didConnect;
-				this.connectionAttemptRunning = false;
-				resumeFunction();
-			} else {
-				do {} while (this.connectionAttemptRunning);
-				resumeFunction();
+
+				this.isConnected = false;
+				return false;
 			}
-		});
+
+			this.isConnected = true;
+			return true;
+		})();
+
+		this.connectionPromise = ConnectionPromise;
+
+		try {
+			return await ConnectionPromise;
+		} finally {
+			if (this.connectionPromise === ConnectionPromise) {
+				this.connectionPromise = null;
+			}
+		}
 	}
 
 	/**
@@ -43,9 +67,13 @@ export class SessionUser implements ISessionUser {
 	 * @returns {ISessionUser} Returns null if an error occured, or an {ISessionUser} if not.
 	 */
 	public static async GetOrCreateByIpAddress(IpAddress: string): Task<ISessionUser> {
-		if (!this.isConnected) await this.connectIfNotConnected();
+		if (!(await this.connectIfNotConnected()) || !this.db) return null;
 
-		const [, , sessionUsers] = this.db.GetTable<ISessionUser>('SessionUser', 'Id', true);
+		const [, tableError, sessionUsers] = this.db.GetTable<ISessionUser>('SessionUser', 'Id', true);
+		if (!sessionUsers) {
+			FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] Error when opening session users table: %s', tableError);
+			return null;
+		}
 		const [success, message, result] = await sessionUsers.SelectAllWhere({
 			Key: 'IpAddress',
 			Condition: PartialDatabaseConditionType.Equal,
@@ -58,7 +86,7 @@ export class SessionUser implements ISessionUser {
 		const thisSession = result.Rows[0];
 		const session = new SessionUser();
 		if (!thisSession) {
-			sessionUsers.InsertValues([
+			const [inserted, insertError] = await sessionUsers.InsertValues([
 				{
 					Key: 'IpAddress',
 					Value: IpAddress,
@@ -66,6 +94,10 @@ export class SessionUser implements ISessionUser {
 				{ Key: 'LanguageCode', Value: 'en_us' },
 				{ Key: 'LanguageName', Value: 'English' },
 			]);
+			if (!inserted) {
+				FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] Error when creating session user: %s', insertError);
+				return null;
+			}
 			session.Id = null; // Make it null because we don't know what the Id will be.
 			session.IpAddress = IpAddress;
 			session.LanguageCode = 'en_us';
