@@ -82,6 +82,7 @@ import { OnlyCORs } from './Assemblies/Web/Handling/Roblox.Web.Handling/OnlyCORs
 import { Tomcat404 } from './Assemblies/Web/Errors/Roblox.Web.Errors/Tomcat';
 import { KeyValueMapping } from './Assemblies/Common/Mapping/Roblox.Common.Mapping/KeyValueMapping';
 import ArgsParser from 'args-parser';
+import { HostRewrite } from './HostRewrite';
 
 if (process.env.SSLKEYLOGFILE) {
 	const ssl = require('sslkeylog');
@@ -185,6 +186,7 @@ FastLogGlobal.Init();
 		const CSRApiServer = IServer();
 		const CSRWebsiteServer = IServer();
 
+		RobloxWebsiteServer.use(HostRewrite);
 		RobloxWebsiteServer.use(GlobalMiddleware);
 
 		if (process.env.PORT) {
