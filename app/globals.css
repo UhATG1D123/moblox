@@ -152,3 +152,44 @@ h3{margin:0 0 8px}
 .moderation-card.is-permanent-ban .moderation-appeal .btn.primary{background:#b3261e}
 .moderation-card.is-permanent-ban .moderation-appeal .btn.primary:hover{background:#8f1f18}
 @media(max-width:600px){.moderation-card.is-permanent-ban,.moderation-card.is-temporary-suspension{border-top-width:4px}}
+
+
+/* Moblox global dark theme */
+:root{color-scheme:dark}
+body{color:#e7e9ed;background:#111315}
+.top{background:#17191c;border-color:#2c3036}
+.search{background:#24272c;color:#f1f3f5;border-color:#343941}
+.search:focus{background:#202328;border-color:#6b8cff}
+.side{border-color:#2c3036;background:#141619}
+.side a:hover,.fcard:hover{background:#25292f}
+.side a.on{background:#303640}
+.muted,.eyebrow,.restriction-details dt,.warning-heading time{color:#a7adb7}
+.btn{background:#303640;color:#f1f3f5}
+.btn:hover{background:#414854}
+.btn.primary{background:#4169e1;color:#fff}
+.btn.primary:hover{background:#3454b4}
+.btn.buy{background:#00a86b;color:#fff}
+.link{color:#8aa7ff}
+.av{background:#303640;color:#e7e9ed}
+.thumb{background:#24272c;color:#a7adb7}
+.filters input,.filters select,.aform input,.aform select,.authbox input,.reportbox input,.resolve input,.aform textarea{background:#1b1e22;color:#e7e9ed;border-color:#414751}
+.banner,.stat,.panel,.aform,.moderation-outcome{background:#1b1e22;color:#e7e9ed}
+.banner.bad{background:#3a2022;color:#ffb4ab}
+.chip{background:#303640}
+.tbl th,.tbl td,.urow,.nlist li{border-color:#30353d}
+.nlist li.unread{background:#242d42}
+.nlist time{color:#a7adb7}
+.restriction-card,.warning-item{background:#191c20;border-color:#30353d;color:#e7e9ed;box-shadow:0 8px 28px rgba(0,0,0,.22)}
+.restriction-details>div,.moderation-details>div{background:#202328;border-color:#343941}
+.countdown,.warning-banner{background:#302817;border-color:#65502b;color:#f4e5bd}
+.moderation-brand{border-color:#343941}
+.moderation-alert{background:#28271f;border-color:#65502b;color:#f1f1f1}
+.moderation-alert.is-terminated,.moderation-alert.is-permanent-ban{background:#321f22;border-color:#67363b}
+.moderation-alert.is-temporary-suspension{background:#302817;border-color:#65502b}
+.moderation-alert.is-permanent-ban .eyebrow{color:#ffaaa5}
+.moderation-outcome.is-permanent-ban,.moderation-outcome.is-terminated{background:#321f22;border-color:#67363b}
+.moderation-outcome.is-temporary-suspension{background:#302817;border-color:#65502b}
+.moderation-appeal{border-color:#343941}
+.moderation-mark{background:#e2231a;color:#fff}
+.ok{color:#6ee7a8}
+.note{color:#ffaaa5}
