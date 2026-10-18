@@ -5,7 +5,7 @@
   "description": "ROBLOXLABS",
   "main": "Source/Bin/Global.asax.js",
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   },
   "scripts": {
     "build": "node path.js && tsc -b --verbose",
