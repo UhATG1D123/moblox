@@ -111,7 +111,7 @@ export class User implements IUser {
 	 * @returns {IUser} Returns an IUser.
 	 */
 	public static async Get(Id: number): Task<IUser> {
-		if (!this.isConnected) await this.connectIfNotConnected();
+		if (!(await this.connectIfNotConnected()) || !this.db) return null;
 		const [, tableError, users] = this.db.GetTable<IUser>('User', 'Id', true);
 		if (!users) {
 			FASTLOGS(DFLog('Tasks'), '[DFLog::Tasks] Error when opening users table: %s', tableError);
@@ -166,7 +166,7 @@ export class User implements IUser {
 	 * @returns {IUser} Returns an IUser.
 	 */
 	public static async GetByName(Name: string): Task<IUser> {
-		if (!this.isConnected) await this.connectIfNotConnected();
+		if (!(await this.connectIfNotConnected()) || !this.db) return null;
 		const [, , users] = this.db.GetTable<IUser>('User', 'Id', true);
 		const [success, message, result] = await users.SelectKeysWhere(
 			[
