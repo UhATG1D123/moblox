@@ -19,6 +19,11 @@ export default async function Profile({ params }) {
   ]);
   if (!p) notFound();
 
+  let avatarUrl = null;
+  if (p.avatar_path) {
+    const { data } = await sb.storage.from('profile-photos').createSignedUrl(p.avatar_path, 3600);
+    avatarUrl = data?.signedUrl || null;
+  }
   const own = p.relationship === 'self';
   const items = inv?.items || [];
   const friends = fr?.friends || [];
@@ -32,7 +37,7 @@ export default async function Profile({ params }) {
     <>
       <ProfileViewPing id={id} />
       <div className="profilehead">
-        <span className="av huge">{p.username[0].toUpperCase()}</span>
+        <span className="av huge">{avatarUrl ? <img src={avatarUrl} alt={p.username + ' profile picture'} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} /> : p.username[0].toUpperCase()}</span>
         <div>
           <h1>{p.display_name}<Badges badges={p.badges} size={26} /></h1>
           <p className="muted">@{p.username} &middot; User ID {p.id} &middot; Joined {new Date(p.joined).toLocaleDateString('en-US')}</p>

@@ -4,6 +4,7 @@ import { getSession } from '@/lib/session';
 import RpcForm from '@/components/RpcForm';
 import ResolveReport from '@/components/ResolveReport';
 import Badges from '@/components/Badges';
+import ProfilePhotoReview from '@/components/ProfilePhotoReview';
 
 const CATS = ['Hats', 'Hair', 'Faces', 'Clothing', 'Accessories'].map((c) => ({ v: c, l: c }));
 const one = (v) => (Array.isArray(v) ? v[0] : v);
@@ -40,10 +41,29 @@ export default async function Admin({ searchParams }) {
     Number.isSafeInteger(lookupId) && lookupId > 0 ? sb.rpc('admin_user_detail', { p_target: lookupId }) : Promise.resolve({ data: null }),
   ]);
   const detail = detailRes.data;
+  let photoRequests = [];
+  if (perms.includes('*') || perms.includes('view_admin')) {
+    const { data: pendingPhotos } = await sb.from('profile_photo_requests')
+      .select('id,profile_id,storage_path,created_at')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: true })
+      .limit(50);
+    if (pendingPhotos?.length) {
+      const ids = [...new Set(pendingPhotos.map((r) => r.profile_id))];
+      const { data: photoProfiles } = await sb.from('profiles').select('id,username').in('id', ids);
+      const names = new Map((photoProfiles || []).map((p) => [p.id, p.username]));
+      photoRequests = await Promise.all(pendingPhotos.map(async (r) => {
+        const { data } = await sb.storage.from('profile-photos').createSignedUrl(r.storage_path, 900);
+        return { ...r, username: names.get(r.profile_id) || 'Unknown', image_url: data?.signedUrl || null };
+      }));
+    }
+  }
 
   return (
     <>
       <h1>Admin</h1>
+      <h2>Profile picture review</h2>
+      <ProfilePhotoReview requests={photoRequests} />
       <p className="muted">Signed in as {me.username} ({me.roles?.name}). Every action below is checked and logged by the database.</p>
       <div className="stats">
         <div className="stat"><b>{users}</b>Users</div>
