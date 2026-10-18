@@ -48,6 +48,7 @@ import { Points } from './Assemblies/Web/Handling/Roblox.Web.Handling/Points';
 import { PointsApi } from './Assemblies/Web/Handling/Roblox.Web.Handling/PointsApi';
 import { ApiServiceIsAliveValidator } from './Assemblies/Web/Handling/Roblox.Web.Handling/ApiServiceIsAliveValidator';
 import { User } from './Assemblies/Platform/Membership/Roblox.Platform.Membership/User';
+import { MobloxAuthRoutes } from './Assemblies/Platform/Membership/Roblox.Platform.Membership/MobloxAuth';
 import { UsersApi } from './Assemblies/Web/Handling/Roblox.Web.Handling/UsersApi';
 import { EphemeralCountersApi } from './Assemblies/Web/Handling/Roblox.Web.Handling/EphemeralCountersApi';
 import { DataWebsite } from './Assemblies/Web/Handling/Roblox.Web.Handling/DataWebsite';
@@ -188,6 +189,7 @@ FastLogGlobal.Init();
 
 		RobloxWebsiteServer.use(HostRewrite);
 		RobloxWebsiteServer.use(GlobalMiddleware);
+		RobloxWebsiteServer.use(MobloxAuthRoutes);
 
 		if (process.env.PORT) {
 			const renderPort = Number(process.env.PORT);
