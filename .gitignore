@@ -31,6 +31,9 @@ typings/
 .node_repl_history
 *.tgz
 .yarn-integrity
+.env
+.env.*
+!.env.example
 .env.test
 .cache
 .next
@@ -39,8 +42,8 @@ dist
 .cache/
 .vuepress/dist
 .serverless/
-.fusebox/
-.dynamodb/
+/.fusebox/
+/.dynamodb/
 .tern-port
 .vscode-test
 .npmignore
