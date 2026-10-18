@@ -32,8 +32,27 @@ export default function FriendActions({ userId, relationship, requestId, loggedI
     await run('remove_friend', { p_target: userId });
   }
   async function report() {
-    const ok = await run('report_user', { p_target: userId, p_reason: reason }, 'Report sent. Thank you.');
-    if (ok) { setReporting(false); setReason(''); }
+    setBusy(true);
+    setMsg('');
+    try {
+      const response = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'user', targetId: userId, reason }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setMsg(result.error || 'Could not submit report.');
+        return;
+      }
+      setMsg(result.message || (result.emailSent ? 'Report sent. Thank you.' : 'Report saved.'));
+      setReporting(false);
+      setReason('');
+    } catch {
+      setMsg('Could not submit report. Please try again.');
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -54,7 +73,7 @@ export default function FriendActions({ userId, relationship, requestId, loggedI
       {reporting && (
         <div className="reportbox">
           <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="What is wrong with this account?" maxLength={500} />
-          <button className="btn danger" disabled={busy} onClick={report}>Send report</button>
+          <button className="btn danger" disabled={busy || reason.trim().length < 3} onClick={report}>{busy ? 'Sending...' : 'Send report'}</button>
         </div>
       )}
       {msg && <p className="note">{msg}</p>}
