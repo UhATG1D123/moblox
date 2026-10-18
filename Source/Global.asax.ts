@@ -389,6 +389,14 @@ FastLogGlobal.Init();
 				false,
 			),
 		);
+
+		if (process.env.PORT) {
+			const renderPort = Number(process.env.PORT);
+			RobloxWebsiteServer.listen(renderPort, '0.0.0.0', () => {
+				FASTLOG2(DFLog('Tasks'), '[DFLog::Tasks] Render website listening on %s:%s', '0.0.0.0', renderPort);
+			});
+			return;
+		}
 		await SystemSDK.Configure(
 			SystemSDK.MetadataBuilder(
 				EphemeralCountersServiceServer,
