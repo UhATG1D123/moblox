@@ -48,7 +48,7 @@ FASTFLAG('RequireGlobalHTTPS');
 
 export default {
 	method: 'all', //Allow all methods but validate the method in the request itself
-	func: async (request: Request, response: Response<GetAllTimePointBalanceResponse>) => {
+	func: async (request: Request<{ universeId: string; userId: string }>, response: Response<GetAllTimePointBalanceResponse>) => {
 		const errors: ICustomError[] = [];
 		const errorsClient = new ErrorsClient(response);
 
