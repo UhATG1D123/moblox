@@ -26,6 +26,7 @@ export default function Login() {
       <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       <button className="btn buy" disabled={busy}>{busy ? 'Logging in...' : 'Log In'}</button>
       {msg && <p className="note">{msg}</p>}
+      <p className="muted"><Link href="/forgot-password">Forgot your password?</Link></p>
       <p className="muted">No account? <Link href="/signup">Sign up</Link></p>
     </form>
   );

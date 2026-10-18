@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, User, Package, Store, Settings, ShieldCheck } from 'lucide-react';
+import { Home, User, Users, Package, Store, Settings, ShieldCheck } from 'lucide-react';
 
 export default function Sidebar({ me, isStaff }) {
   const path = usePathname();
@@ -9,6 +9,7 @@ export default function Sidebar({ me, isStaff }) {
     { href: '/', label: 'Home', Icon: Home },
     ...(me ? [
       { href: `/users/${me.id}/profile`, label: 'Profile', Icon: User },
+      { href: '/friends', label: 'Friends', Icon: Users },
       { href: '/inventory', label: 'Inventory', Icon: Package },
     ] : []),
     { href: '/catalog', label: 'Marketplace', Icon: Store },

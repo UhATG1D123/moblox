@@ -68,4 +68,28 @@ h3{margin:0 0 8px}
 .aform{display:flex;flex-direction:column;gap:8px;background:#f8f9fa;border-radius:8px;padding:16px}
 .aform label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600}
 .resolve{display:flex;gap:6px;align-items:center}
+.badges{display:inline-flex;align-items:center;gap:4px;margin-left:6px;vertical-align:middle}
+.badge-ic{flex:none}
+.bell{position:relative;display:inline-flex;align-items:center;text-decoration:none;padding:4px}
+.bellcount{position:absolute;top:-4px;right:-6px;min-width:17px;height:17px;border-radius:9px;background:#b3261e;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.urow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #e3e5e8}
+.urow .who{font-weight:700}
+.urow-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.fcard{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;font-weight:600;text-align:center;padding:12px 8px;border-radius:8px}
+.fcard:hover{background:#f2f4f5}
+.fcard .av{width:64px;height:64px;font-size:26px}
+.bio{max-width:70ch;white-space:pre-wrap;margin:12px 0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.actions .note{flex-basis:100%;margin:0}
+.btn.danger{background:#b3261e;color:#fff}
+.btn.danger:hover{background:#8f1f18}
+.ok{color:#0a7a4b}
+.nlist{list-style:none;padding:0;margin:0;max-width:640px}
+.nlist li{display:flex;justify-content:space-between;gap:16px;padding:12px;border-bottom:1px solid #e3e5e8}
+.nlist li.unread{background:#eef2ff;font-weight:600}
+.nlist time{color:#606060;font-size:13px;font-weight:400;white-space:nowrap}
+.aform textarea{min-height:90px;border:1px solid #bdbebe;border-radius:8px;padding:8px 10px;font-size:15px;font-family:inherit;resize:vertical}
+.panel{background:#f8f9fa;border-radius:8px;padding:16px 20px;margin:12px 0 24px}
+.panel h4{margin:16px 0 4px;font-size:16px}
 @media(max-width:800px){.side{display:none}.main{padding:16px}.navlink{display:none}.itemgrid{grid-template-columns:1fr}.profilehead{flex-wrap:wrap}}

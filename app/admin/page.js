@@ -3,14 +3,20 @@ import { notFound } from 'next/navigation';
 import { getSession } from '@/lib/session';
 import RpcForm from '@/components/RpcForm';
 import ResolveReport from '@/components/ResolveReport';
+import Badges from '@/components/Badges';
 
 const CATS = ['Hats', 'Hair', 'Faces', 'Clothing', 'Accessories'].map((c) => ({ v: c, l: c }));
+const one = (v) => (Array.isArray(v) ? v[0] : v);
+const clean = (v, n) => String(one(v) ?? '').trim().slice(0, n).replace(/[%_,()*\\]/g, ' ').trim();
+const when = (d) => new Date(d).toLocaleString('en-US');
 
 export default async function Admin({ searchParams }) {
   const { sb, me, perms, isStaff } = await getSession();
   if (!isStaff) notFound();
   const isOwner = perms.includes('*');
-  const q = (searchParams.q || '').trim().slice(0, 30).replace(/[%_,]/g, ' ');
+  const q = clean(searchParams.q, 30);
+  const a = clean(searchParams.a, 40);
+  const lookupId = Number.parseInt(one(searchParams.user), 10);
 
   const count = async (t, f) => {
     let r = sb.from(t).select('*', { count: 'exact', head: true });
@@ -22,13 +28,18 @@ export default async function Admin({ searchParams }) {
   ]);
   let uq = sb.from('profiles').select('id,username,balance,status,created_at,roles(name)').order('id', { ascending: false }).limit(25);
   if (q) uq = uq.ilike('username', `%${q}%`);
-  const [{ data: userRows }, { data: reports }, { data: audit }, { data: sales }, { data: allItems }] = await Promise.all([
+  let aq = sb.from('audit_log').select('id,admin_id,action,target,reason,created_at').order('id', { ascending: false }).limit(50);
+  if (a) aq = aq.or(`action.ilike.%${a}%,target.ilike.%${a}%,reason.ilike.%${a}%`);
+
+  const [{ data: userRows }, { data: reports }, { data: audit }, { data: sales }, { data: allItems }, detailRes] = await Promise.all([
     uq,
-    sb.from('reports').select('id,item_id,reporter_id,reason,created_at').eq('status', 'open').order('id', { ascending: false }).limit(20),
-    sb.from('audit_log').select('id,admin_id,action,target,reason,created_at').order('id', { ascending: false }).limit(25),
+    sb.from('reports').select('id,item_id,reported_user_id,reporter_id,reason,created_at').eq('status', 'open').order('id', { ascending: false }).limit(20),
+    aq,
     sb.from('ledger').select('id,profile_id,amount,item_id,created_at').eq('kind', 'purchase').order('id', { ascending: false }).limit(8),
     sb.from('items').select('id,name,published,price').order('id', { ascending: false }).limit(25),
+    Number.isSafeInteger(lookupId) && lookupId > 0 ? sb.rpc('admin_user_detail', { p_target: lookupId }) : Promise.resolve({ data: null }),
   ]);
+  const detail = detailRes.data;
 
   return (
     <>
@@ -41,11 +52,46 @@ export default async function Admin({ searchParams }) {
         <div className="stat"><b>{warnCount}</b>Warnings issued</div>
       </div>
 
+      <h2 id="lookup">User lookup</h2>
+      <form method="get" className="filters">
+        <input name="user" type="number" min="1" defaultValue={Number.isSafeInteger(lookupId) ? lookupId : ''} placeholder="User ID" />
+        <button className="btn primary">Look up</button>
+      </form>
+      {Number.isSafeInteger(lookupId) && !detail && <p className="muted">No user with that ID.</p>}
+      {detail && (
+        <div className="panel">
+          <h3>{detail.display_name} <Badges badges={detail.badges} size={18} /></h3>
+          <p className="muted">
+            @{detail.username} &middot; ID {detail.id} &middot; {detail.role} &middot; {detail.status}
+            {detail.status_until ? ` until ${when(detail.status_until)}` : ''}
+          </p>
+          <div className="chips">
+            <span className="chip">{detail.balance} MoBux</span>
+            <span className="chip">{detail.friend_count} friends</span>
+            <span className="chip">{detail.profile_views} views</span>
+            <span className="chip">{detail.reports_against} reports against</span>
+            <Link className="chip" href={`/users/${detail.id}/profile`}>Open profile</Link>
+          </div>
+          <h4>Warnings ({detail.warnings.length})</h4>
+          {detail.warnings.length === 0 ? <p className="muted">None.</p> : (
+            <table className="tbl"><tbody>{detail.warnings.map((w) => (
+              <tr key={w.id}><td>{when(w.created_at)}</td><td>Admin {w.admin_id}</td><td>{w.reason}</td></tr>
+            ))}</tbody></table>
+          )}
+          <h4>Audit history</h4>
+          {detail.audit.length === 0 ? <p className="muted">No admin actions on this user.</p> : (
+            <table className="tbl"><tbody>{detail.audit.map((x) => (
+              <tr key={x.id}><td>{when(x.created_at)}</td><td>Admin {x.admin_id}</td><td>{x.action}</td><td>{x.reason}</td></tr>
+            ))}</tbody></table>
+          )}
+        </div>
+      )}
+
       <h2>Users</h2>
       <form method="get" className="filters"><input name="q" defaultValue={q} placeholder="Search username" /><button className="btn">Search</button></form>
-      <table className="tbl"><thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Status</th><th>MoBux</th></tr></thead>
+      <table className="tbl"><thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Status</th><th>MoBux</th><th></th></tr></thead>
         <tbody>{(userRows || []).map((u) => (
-          <tr key={u.id}><td>{u.id}</td><td><Link href={`/users/${u.id}/profile`}>{u.username}</Link></td><td>{u.roles?.name}</td><td>{u.status}</td><td>{u.balance}</td></tr>
+          <tr key={u.id}><td>{u.id}</td><td><Link href={`/users/${u.id}/profile`}>{u.username}</Link></td><td>{u.roles?.name}</td><td>{u.status}</td><td>{u.balance}</td><td><Link href={`/admin?user=${u.id}#lookup`}>Inspect</Link></td></tr>
         ))}</tbody></table>
 
       <div className="forms">
@@ -60,6 +106,11 @@ export default async function Admin({ searchParams }) {
         <RpcForm title="Adjust MoBux" rpc="admin_adjust_currency" button="Adjust" fields={[
           { name: 'id', param: 'p_target', label: 'User ID', type: 'number', required: true },
           { name: 'amount', param: 'p_amount', label: 'Amount (negative removes)', type: 'number', required: true },
+          { name: 'reason', param: 'p_reason', label: 'Reason', required: true }]} />
+        <RpcForm title="Badges" rpc="admin_set_badge" button="Apply badge" fields={[
+          { name: 'id', param: 'p_target', label: 'User ID', type: 'number', required: true },
+          { name: 'badge', param: 'p_badge', label: 'Badge', required: true, options: [{ v: 'official_admin', l: 'Official Admin' }, { v: 'verified', l: 'Verified' }] },
+          { name: 'granted', param: 'p_granted', label: 'Grant (untick to remove)', type: 'checkbox' },
           { name: 'reason', param: 'p_reason', label: 'Reason', required: true }]} />
         {isOwner && (
           <RpcForm title="Set role (owner only)" rpc="admin_set_role" button="Set role" fields={[
@@ -87,20 +138,31 @@ export default async function Admin({ searchParams }) {
       <h2>Reports</h2>
       {(!reports || reports.length === 0) ? <p>No open reports.</p> : (
         <table className="tbl"><tbody>{reports.map((r) => (
-          <tr key={r.id}><td>#{r.id}</td><td>Item <Link href={`/catalog/${r.item_id}`}>{r.item_id}</Link> by user {r.reporter_id}: {r.reason}</td><td><ResolveReport id={r.id} /></td></tr>
+          <tr key={r.id}>
+            <td>#{r.id}</td>
+            <td>
+              {r.reported_user_id
+                ? <>User <Link href={`/admin?user=${r.reported_user_id}#lookup`}>{r.reported_user_id}</Link></>
+                : <>Item <Link href={`/catalog/${r.item_id}`}>{r.item_id}</Link></>}
+              {' '}reported by user {r.reporter_id}: {r.reason}
+            </td>
+            <td><ResolveReport id={r.id} /></td>
+          </tr>
         ))}</tbody></table>
       )}
 
       <h2>Recent purchases</h2>
       <table className="tbl"><tbody>{(sales || []).map((s) => (
-        <tr key={s.id}><td>User {s.profile_id}</td><td>item {s.item_id}</td><td>{s.amount}</td><td>{new Date(s.created_at).toLocaleString('en-US')}</td></tr>
+        <tr key={s.id}><td>User {s.profile_id}</td><td>item {s.item_id}</td><td>{s.amount}</td><td>{when(s.created_at)}</td></tr>
       ))}</tbody></table>
 
       <h2>Audit log</h2>
+      <form method="get" className="filters"><input name="a" defaultValue={a} placeholder="Search action, target or reason" /><button className="btn">Search</button></form>
       <table className="tbl"><thead><tr><th>When</th><th>Admin</th><th>Action</th><th>Target</th><th>Reason</th></tr></thead>
-        <tbody>{(audit || []).map((a) => (
-          <tr key={a.id}><td>{new Date(a.created_at).toLocaleString('en-US')}</td><td>{a.admin_id}</td><td>{a.action}</td><td>{a.target}</td><td>{a.reason}</td></tr>
+        <tbody>{(audit || []).map((x) => (
+          <tr key={x.id}><td>{when(x.created_at)}</td><td>{x.admin_id}</td><td>{x.action}</td><td>{x.target}</td><td>{x.reason}</td></tr>
         ))}</tbody></table>
+      {audit && audit.length === 0 && <p className="muted">No matching entries.</p>}
     </>
   );
 }
