@@ -132,7 +132,7 @@ export class PartialDatabase {
 		}
 	}
 
-	public async Query(Sql: string, Values: unknown[] = []): Promise<[boolean, string, any]> {
+	public async Query(Sql: string, Values: any[] = []): Promise<[boolean, string, any]> {
 		if (!this.connected_ || !this.connection_) {
 			return [false, 'The database has not been connected to yet.', null];
 		}
