@@ -9,7 +9,7 @@ const INTERNAL_WEB = `www.${INTERNAL_DOMAIN}`;
 
 export function mapHost(rawHost: string | undefined): string | undefined {
 	if (!rawHost) return rawHost;
-	const [host, port] = rawHost.toLowerCase().split(':');
+	const [host] = rawHost.toLowerCase().split(':');
 	if (host.endsWith(INTERNAL_DOMAIN)) return rawHost; // already internal
 	if (host === PUBLIC_DOMAIN || host === `www.${PUBLIC_DOMAIN}`) return INTERNAL_WEB;
 	if (host.endsWith(`.${PUBLIC_DOMAIN}`)) {
