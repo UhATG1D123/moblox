@@ -96,6 +96,9 @@ FastLogGlobal.Init();
 		const isClosureTest = args['closure-after-seconds'] !== undefined;
 
 		const RobloxWebsiteServer = IServer();
+		RobloxWebsiteServer.get('/healthz', (_request: Request, response: Response) => {
+			response.status(200).type('text/plain').send('OK');
+		});
 		const StaticCDNServer = IServer();
 		const JavaScriptCDNServer = IServer();
 		const CSSCDNServer = IServer();
