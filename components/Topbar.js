@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import MoBux from './MoBux';
+import ProfileAvatar from './ProfileAvatar';
 
 export default function Topbar({ me, unread = 0 }) {
   return (
@@ -20,7 +21,7 @@ export default function Topbar({ me, unread = 0 }) {
               {unread > 0 && <span className="bellcount">{unread > 9 ? '9+' : unread}</span>}
             </Link>
             <Link href={`/users/${me.id}/profile`} className="who">
-              <span className="av sm">{me.username[0].toUpperCase()}</span>{me.username}
+              <ProfileAvatar userId={me.id} username={me.username} />{me.username}
             </Link>
             <span className="bal" title="Your MoBux balance"><MoBux n={me.balance} /></span>
             <form action="/auth/signout" method="post"><button className="btn">Log out</button></form>
