@@ -100,7 +100,7 @@ export default {
 
 			const [UserInserted, UserError, UserResult] = await Database.Query(
 				'INSERT INTO `robloxmembership`.`user` (`Name`, `DisplayName`, `MembershipType`, `Description`, `Created`, `Updated`, `IsBanned`, `AgeBracket`, `Roles`, `CountryCode`, `UserAbove13`, `IsAdmin`, `AccountId`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-				[Username, Username, 'None', '', Now, Now, 0, 0, JSON.stringify([]), typeof (Body.countryCode ?? Body.CountryCode) === 'string' ? (Body.countryCode ?? Body.CountryCode) : 'US', Birthday.getTime() <= new Date(Now.getFullYear() - 13, Now.getMonth(), Now.getDate()).getTime() ? 1 : 0, 0, AccountId]
+				[Username, Username, 'None', '', Now, Now, 0, 0, JSON.stringify([]), typeof (Body.countryCode ?? Body.CountryCode) === 'string' ? String(Body.countryCode ?? Body.CountryCode).slice(0, 8) : 'US', Birthday.getTime() <= new Date(Now.getFullYear() - 13, Now.getMonth(), Now.getDate()).getTime() ? 1 : 0, 0, AccountId]
 			);
 			if (!UserInserted) throw new Error(UserError);
 			const UserId = Number(UserResult.insertId);
@@ -136,7 +136,7 @@ export default {
 			});
 
 			return Response.status(201).json({ userId: UserId, username: Username });
-		} catch (_Error) {
+		} catch {
 			if (InTransaction) await Database.Query('ROLLBACK');
 			return Response.status(500).json(CreateError('We could not create your account. Please try again.'));
 		} finally {
