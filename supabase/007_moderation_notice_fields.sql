@@ -1,6 +1,7 @@
 -- Moblox moderation notice fields: category and moderator note.
 -- Apply after the existing moderation migration.
-drop function if exists public.admin_set_status(bigint, text, integer, text);
+-- Preserve the existing four-argument RPC until the new five-argument RPC is verified.
+-- PostgREST selects the five-argument overload when the admin panel sends p_category.
 
 create function public.admin_set_status(
   p_target bigint,
