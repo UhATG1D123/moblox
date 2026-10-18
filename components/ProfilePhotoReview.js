@@ -24,6 +24,7 @@ export default function ProfilePhotoReview({ requests }) {
     {requests.map(r => <div className="panel" key={r.id}>
       <h3>Request #{r.id} — @{r.username} (User {r.profile_id})</h3>
       <p className="muted">Submitted {new Date(r.created_at).toLocaleString()}</p>
+      {r.image_url && <img src={r.image_url} alt={"Pending picture for " + r.username} style={{ width: 120, height: 120, objectFit: "cover", borderRadius: 8 }} />}
       <div className="chips">
         <button className="btn primary" disabled={!!busy} onClick={() => review(r.id, true)}>{busy === r.id ? 'Working...' : 'Approve'}</button>
         <button className="btn" disabled={!!busy} onClick={() => review(r.id, false)}>Reject</button>
