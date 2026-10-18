@@ -186,6 +186,13 @@ FastLogGlobal.Init();
 		const CSRWebsiteServer = IServer();
 
 		RobloxWebsiteServer.use(GlobalMiddleware);
+
+		if (process.env.PORT) {
+			const renderPort = Number(process.env.PORT);
+			RobloxWebsiteServer.listen(renderPort, '0.0.0.0', () => {
+				FASTLOG2(DFLog('Tasks'), '[DFLog::Tasks] Render website listening on %s:%s', '0.0.0.0', renderPort);
+			});
+		}
 		StaticCDNServer.use(GlobalMiddleware);
 		JavaScriptCDNServer.use(GlobalMiddleware);
 		CSSCDNServer.use(GlobalMiddleware);
@@ -394,10 +401,6 @@ FastLogGlobal.Init();
 		);
 
 		if (process.env.PORT) {
-			const renderPort = Number(process.env.PORT);
-			RobloxWebsiteServer.listen(renderPort, '0.0.0.0', () => {
-				FASTLOG2(DFLog('Tasks'), '[DFLog::Tasks] Render website listening on %s:%s', '0.0.0.0', renderPort);
-			});
 			return;
 		}
 		await SystemSDK.Configure(
