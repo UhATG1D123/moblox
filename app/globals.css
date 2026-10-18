@@ -93,3 +93,27 @@ h3{margin:0 0 8px}
 .panel{background:#f8f9fa;border-radius:8px;padding:16px 20px;margin:12px 0 24px}
 .panel h4{margin:16px 0 4px;font-size:16px}
 @media(max-width:800px){.side{display:none}.main{padding:16px}.navlink{display:none}.itemgrid{grid-template-columns:1fr}.profilehead{flex-wrap:wrap}}
+
+/* Account moderation and warning acknowledgment */
+.eyebrow{margin:0 0 6px;color:#606060;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.main-restricted{width:100%;max-width:900px;margin:0 auto;padding-top:40px}
+.restriction-card{max-width:720px;margin:24px auto;background:#fff;border:1px solid #e3e5e8;border-radius:14px;padding:28px;box-shadow:0 8px 28px rgba(0,0,0,.05)}
+.restriction-card h1{margin-top:0}
+.restriction-card p{line-height:1.6}
+.restriction-details{margin:22px 0;display:grid;gap:12px}
+.restriction-details>div{padding:12px 14px;background:#f8f9fa;border-radius:8px}
+.restriction-details dt{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#606060;font-weight:800}
+.restriction-details dd{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.restriction-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:18px}
+.countdown{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px;background:#fff4e5;border:1px solid #f0d1a8;border-radius:10px;margin:20px 0}
+.countdown-label{font-weight:700}.countdown b{font-variant-numeric:tabular-nums;font-size:22px}
+.warning-banner{background:#fff4e5;border:1px solid #f0d1a8}
+.warnings-page{max-width:820px}.warnings-page>p{line-height:1.6}
+.warning-list{display:grid;gap:14px;margin-top:20px}
+.warning-item{margin:0;border:1px solid #e3e5e8;background:#fff}
+.warning-heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.warning-heading h2{margin:0;font-size:19px}
+.warning-heading time{font-size:13px;color:#606060}
+.warning-reason{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
+@media(max-width:600px){.restriction-card{margin:8px;padding:20px}.countdown{align-items:flex-start;flex-direction:column}.warning-heading{align-items:flex-start}}
+

@@ -16,8 +16,11 @@ create table profiles (
   username text unique not null check (username ~ '^[A-Za-z0-9_]{3,20}$'),
   role_id int not null references roles(id) default 3,
   balance integer not null default 100 check (balance >= 0),
-  status text not null default 'active' check (status in ('active','suspended','banned')),
+  status text not null default 'active' check (status in ('active','suspended','banned','terminated')),
   status_until timestamptz,
+  status_reason text,
+  status_category text,
+  status_issued_at timestamptz,
   created_at timestamptz not null default now()
 );
 
@@ -56,6 +59,7 @@ create table warnings (
   profile_id bigint not null references profiles(id),
   admin_id bigint not null references profiles(id),
   reason text not null,
+  acknowledged_at timestamptz,
   created_at timestamptz not null default now()
 );
 

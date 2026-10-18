@@ -100,8 +100,8 @@ export default async function Admin({ searchParams }) {
           { name: 'reason', param: 'p_reason', label: 'Reason', required: true }]} />
         <RpcForm title="Suspend / ban / reinstate" rpc="admin_set_status" button="Apply" fields={[
           { name: 'id', param: 'p_target', label: 'User ID', type: 'number', required: true },
-          { name: 'status', param: 'p_status', label: 'Status', required: true, options: [{ v: 'suspended', l: 'Suspend' }, { v: 'banned', l: 'Ban' }, { v: 'active', l: 'Reinstate / unban' }] },
-          { name: 'hours', param: 'p_hours', label: 'Suspend hours (optional)', type: 'number' },
+          { name: 'status', param: 'p_status', label: 'Status', required: true, options: [{ v: 'suspended', l: 'Suspend' }, { v: 'banned', l: 'Ban' }, ...(isOwner ? [{ v: 'terminated', l: 'Terminate permanently' }] : []), { v: 'active', l: 'Reinstate / unban' }] },
+          { name: 'hours', param: 'p_hours', label: 'Duration in hours (optional; blank = permanent)', type: 'number' },
           { name: 'reason', param: 'p_reason', label: 'Reason', required: true }]} />
         <RpcForm title="Adjust MoBux" rpc="admin_adjust_currency" button="Adjust" fields={[
           { name: 'id', param: 'p_target', label: 'User ID', type: 'number', required: true },
