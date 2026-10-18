@@ -37,7 +37,6 @@ export default async function Profile({ params }) {
           <h1>{p.display_name}<Badges badges={p.badges} size={26} /></h1>
           <p className="muted">@{p.username} &middot; User ID {p.id} &middot; Joined {new Date(p.joined).toLocaleDateString('en-US')}</p>
           {p.status === 'banned' && <p className="note">This account is banned.</p>}
-          {p.status === 'suspended' && <p className="note">This account is suspended.</p>}
           {p.last_seen && <p className="muted">Last seen {new Date(p.last_seen).toLocaleDateString('en-US')}</p>}
           <div className="chips">
             <Link className="chip" href={`/users/${p.id}/friends`}>{p.friend_count} friends</Link>
