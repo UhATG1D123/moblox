@@ -62,7 +62,7 @@ export default {
 		}
 
 		const Database = new PartialDatabase('RobloxMembership', '', '');
-		const [Connected, ConnectError] = await Database.Connect();
+		const [Connected] = await Database.Connect();
 		if (!Connected) {
 			return Response.status(503).json(CreateError('Account creation is temporarily unavailable. Please try again.'));
 		}
