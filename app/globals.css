@@ -117,3 +117,24 @@ h3{margin:0 0 8px}
 .warning-reason{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
 @media(max-width:600px){.restriction-card{margin:8px;padding:20px}.countdown{align-items:flex-start;flex-direction:column}.warning-heading{align-items:flex-start}}
 
+
+/* Roblox-inspired account moderation notice for Moblox */
+.moderation-card{max-width:760px;padding:30px 32px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.moderation-brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800;padding-bottom:20px;border-bottom:1px solid #e3e5e8;margin-bottom:24px}
+.moderation-mark{display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;background:#e2231a;color:#fff;font-weight:900;border-radius:7px}
+.moderation-alert{background:#fff7f0;border:1px solid #f0d1a8;border-left:5px solid #d97706;border-radius:8px;padding:20px 22px}
+.moderation-alert.is-terminated{background:#fff1f0;border-color:#f1c3c0;border-left-color:#b3261e}
+.moderation-alert h1{font-size:28px;margin:4px 0 10px}
+.moderation-alert p:last-child{margin-bottom:0}
+.moderation-guidance{margin:22px 0}
+.moderation-details{gap:0;border:1px solid #e3e5e8;border-radius:8px;overflow:hidden}
+.moderation-details>div{background:#fff;border-radius:0;border-bottom:1px solid #e3e5e8;padding:14px 16px}
+.moderation-details>div:last-child{border-bottom:0}
+.moderation-details dt{font-size:12px;color:#606060}
+.moderation-details dd{font-size:15px}
+.moderation-outcome{background:#f2f4f5;border-radius:8px;padding:16px;margin:20px 0}
+.moderation-outcome p{margin:6px 0 0}
+.moderation-appeal{border-top:1px solid #e3e5e8;padding-top:18px;margin-top:24px}
+.moderation-appeal h2{font-size:20px;margin:0 0 8px}
+.moderation-appeal p{margin:0 0 14px}
+@media(max-width:600px){.moderation-card{padding:20px}.moderation-alert{padding:16px}.moderation-alert h1{font-size:24px}}
