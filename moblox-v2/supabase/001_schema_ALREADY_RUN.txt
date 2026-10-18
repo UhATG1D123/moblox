@@ -1,1 +1,0 @@
-You already ran the first schema file. If you ever need it again, it is in the earlier moblox-starter.zip.
