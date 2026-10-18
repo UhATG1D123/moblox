@@ -40,7 +40,7 @@ export class User implements IUser {
 	private static db: PartialDatabase | null = null;
 
 	private static async connectIfNotConnected(): Task<boolean> {
-		if (this.db && this.db.IsConnected) {
+		if (this.isConnected && this.db && this.db.IsConnected) {
 			this.isConnected = true;
 			return true;
 		}
