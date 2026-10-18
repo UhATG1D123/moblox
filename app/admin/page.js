@@ -106,7 +106,7 @@ export default async function Admin({ searchParams }) {
           { name: 'reason', param: 'p_reason', label: 'Moderator note shown to the user', required: true }]} />
         <RpcForm title="Adjust MoBux" rpc="admin_adjust_currency" button="Adjust" fields={[
           { name: 'id', param: 'p_target', label: 'User ID', type: 'number', required: true },
-          { name: 'amount', param: 'p_amount', label: 'Amount (negative removes)', type: 'number', required: true },
+          { name: 'amount', param: 'p_amount', label: 'Amount (negative removes; max ±2,147,483,647)', type: 'number', min: -2147483647, max: 2147483647, required: true },
           { name: 'reason', param: 'p_reason', label: 'Reason', required: true }]} />
         <RpcForm title="Badges" rpc="admin_set_badge" button="Apply badge" fields={[
           { name: 'id', param: 'p_target', label: 'User ID', type: 'number', required: true },
