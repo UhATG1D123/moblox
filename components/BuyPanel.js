@@ -17,9 +17,27 @@ export default function BuyPanel({ itemId, price, owned, loggedIn, balance }) {
     if (error) setMsg(error.message); else router.refresh();
   }
   async function report() {
-    const { error } = await createClient().rpc('report_item', { p_item: itemId, p_reason: reason });
-    setMsg(error ? error.message : 'Report sent. Thank you.');
-    if (!error) { setOpen(false); setReason(''); }
+    setBusy(true);
+    setMsg('');
+    try {
+      const response = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'item', targetId: itemId, reason }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setMsg(result.error || 'Could not submit report.');
+        return;
+      }
+      setMsg(result.message || 'Report sent. Thank you.');
+      setOpen(false);
+      setReason('');
+    } catch {
+      setMsg('Could not submit report. Please try again.');
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (!loggedIn) return <a className="btn buy" href="/login">Log in to buy</a>;
@@ -33,7 +51,7 @@ export default function BuyPanel({ itemId, price, owned, loggedIn, balance }) {
       {open && (
         <div className="reportbox">
           <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="What's wrong with it?" maxLength={500} />
-          <button className="btn" onClick={report}>Send report</button>
+          <button className="btn" disabled={busy || reason.trim().length < 3} onClick={report}>{busy ? 'Sending...' : 'Send report'}</button>
         </div>
       )}
     </div>
