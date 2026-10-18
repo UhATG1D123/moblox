@@ -44,6 +44,10 @@ export class PartialDatabase {
 		});
 	}
 
+	public get IsConnected(): boolean {
+		return this.connected_ && this.connection_ !== null;
+	}
+
 	public GetTable<TEntity>(
 		name: string,
 		primaryKey: string,
