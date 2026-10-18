@@ -35,7 +35,7 @@ DYNAMIC_FASTSTRING('SiteBanner');
 
 export default {
 	method: 'all',
-	func: async (request: Request, response: Response): Promise<void> => {
+	func: async (request: Request<{ userId: string }>, response: Response): Promise<void> => {
 		let cookie = KeyValueMapping.GetValueFromCookieString('.ROBLOSECURITY', request.headers.cookie);
 		const authenticatedUser = await User.GetByCookie(cookie);
 		if (!authenticatedUser && cookie !== undefined) response.clearCookie('.ROBLOSECURITY', { domain: 'sitetest4.robloxlabs.com' });
