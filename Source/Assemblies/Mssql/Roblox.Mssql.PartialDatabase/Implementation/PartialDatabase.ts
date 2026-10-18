@@ -132,6 +132,23 @@ export class PartialDatabase {
 		}
 	}
 
+	public async Query(Sql: string, Values: unknown[] = []): Promise<[boolean, string, any]> {
+		if (!this.connected_ || !this.connection_) {
+			return [false, 'The database has not been connected to yet.', null];
+		}
+
+		return new Promise<[boolean, string, any]>((resolve) => {
+			this.connection_!.query(Sql, Values, (ErrorValue: Error | null, Results: any) => {
+				if (ErrorValue) {
+					resolve([false, ErrorValue.message, null]);
+					return;
+				}
+
+				resolve([true, '', Results]);
+			});
+		});
+	}
+
 	public async Disconnect(): Task<[boolean, string]> {
 		const ConnectionInstance: Connection | null = this.connection_;
 
