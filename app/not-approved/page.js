@@ -5,7 +5,7 @@ import Countdown from '@/components/Countdown';
 import RetryRestrictionCheck from '@/components/RetryRestrictionCheck';
 import AcknowledgeWarnings from '@/components/AcknowledgeWarnings';
 
-const utc = (value) => value ? new Date(value).toISOString().replace('T', ' ').replace(/\\.\\d{3}Z$/, ' UTC') : 'Not available';
+const utc = (value) => value ? new Date(value).toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC') : 'Not available';
 
 export default async function NotApproved() {
   const { me, restriction, restrictionError, warnings, warningError } = await getSession();
