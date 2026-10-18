@@ -68,7 +68,7 @@ export async function POST(request) {
     dateStyle: 'full',
     timeStyle: 'long',
     timeZone: 'UTC',
-  }) + ' UTC';
+  });
   const subject = `[Moblox Report] ${type === 'user' ? 'User report' : 'Item report'} — ${type === 'user' ? '@' + targetUsername : targetLabel}`;
   const textBody = [
     'MOBLOX — COMMUNITY REPORT',
@@ -105,6 +105,7 @@ export async function POST(request) {
       body: JSON.stringify({
         from,
         to: [REPORTS_EMAIL],
+        replyTo: [REPORTS_EMAIL],
         subject,
         text: textBody,
         html: `
@@ -127,7 +128,7 @@ export async function POST(request) {
                 <div style="white-space:pre-wrap;overflow-wrap:anywhere;background:#f7f7f8;border:1px solid #e5e7eb;border-radius:6px;padding:16px;font-size:14px;line-height:1.6">${escapeHtml(reason)}</div>
                 <p style="margin:26px 0 0"><a href="https://moblox.xyz/admin" style="display:inline-block;background:#335fff;color:#fff;text-decoration:none;padding:12px 18px;border-radius:5px;font-weight:600">Review report in Admin</a></p>
               </div>
-              <div style="padding:16px 28px;background:#f8f9fa;border-top:1px solid #e5e7eb;color:#777;font-size:12px">Automated notification from Moblox. Do not reply to this email.</div>
+              <div style="padding:16px 28px;background:#f8f9fa;border-top:1px solid #e5e7eb;color:#777;font-size:12px">Automated notification from Moblox. Replies go to the Moblox moderation inbox.</div>
             </div>
           </div>
         `,
