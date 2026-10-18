@@ -6,6 +6,7 @@ import ItemCard from '@/components/ItemCard';
 import Badges from '@/components/Badges';
 import FriendActions from '@/components/FriendActions';
 import ProfileViewPing from '@/components/ProfileViewPing';
+import ProfileAvatar from '@/components/ProfileAvatar';
 
 export default async function Profile({ params }) {
   const { sb, me } = await getSession();
@@ -69,7 +70,7 @@ export default async function Profile({ params }) {
           <div className="fgrid">
             {friends.map((f) => (
               <Link key={f.id} href={`/users/${f.id}/profile`} className="fcard">
-                <span className="av">{f.username[0].toUpperCase()}</span>
+                <ProfileAvatar userId={f.id} username={f.username} className="av" />
                 <div>{f.display_name}<Badges badges={f.badges} size={14} /></div>
               </Link>
             ))}
