@@ -89,9 +89,9 @@ export default async function Admin({ searchParams }) {
 
       <h2>Users</h2>
       <form method="get" className="filters"><input name="q" defaultValue={q} placeholder="Search username" /><button className="btn">Search</button></form>
-      <table className="tbl"><thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Status</th><th>MoBux</th><th></th></tr></thead>
+      <table className="tbl"><thead><tr><th>UserID</th><th>UserName</th><th>AccountRole</th><th>AccountStatus</th><th>MoBuxBalance</th><th>Actions</th></tr></thead>
         <tbody>{(userRows || []).map((u) => (
-          <tr key={u.id}><td>{u.id}</td><td><Link href={`/users/${u.id}/profile`}>{u.username}</Link></td><td>{u.roles?.name}</td><td>{u.status}</td><td>{u.balance}</td><td><Link href={`/admin?user=${u.id}#lookup`}>Inspect</Link></td></tr>
+          <tr key={u.id}><td>{u.id}</td><td><Link href={`/users/${u.id}/profile`}>{u.username}</Link></td><td>{u.roles?.name}</td><td>{u.status}</td><td>{u.balance}</td><td><Link href={`/admin?user=${u.id}#lookup`}>ViewDetails</Link></td></tr>
         ))}</tbody></table>
 
       <div className="forms">
