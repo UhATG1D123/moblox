@@ -35,7 +35,7 @@ import { WebParsers } from '../../../../../Assemblies/Web/Parsers/Roblox.Web.Par
 
 export default {
 	method: 'all',
-	func: (request: Request, response: Response) => {
+	func: (request: Request<{ group: string }>, response: Response) => {
 		const inputValidatorClient = new InputValidator();
 
 		const group = WebParsers.SanitizeData(request.params.group);
