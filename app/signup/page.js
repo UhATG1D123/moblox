@@ -18,14 +18,21 @@ export default function Signup() {
     if (!/^[A-Za-z0-9_]{3,20}$/.test(username)) { setMsg('Username must be 3-20 letters, numbers or underscores.'); return; }
     if (password.length < 8) { setMsg('Password must be at least 8 characters.'); return; }
     setBusy(true);
-    const { data, error } = await createClient().auth.signUp({ email, password, options: { data: { username } } });
+    const { data, error } = await createClient().auth.signUp({
+      email,
+      password,
+      options: {
+        data: { username },
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/verified`,
+      },
+    });
     setBusy(false);
     if (error) {
       setMsg(/database error/i.test(error.message) ? 'That username is taken or not allowed. Try another.' : error.message);
       return;
     }
     if (data.session) { router.push('/'); router.refresh(); }
-    else setMsg('Account created. Check your email to confirm it, then log in.');
+    else setMsg('Account created. Check your email to confirm it, then return to Moblox. You will see “Account Verified” when confirmation succeeds.');
   }
   return (
     <form onSubmit={submit} className="authbox">
