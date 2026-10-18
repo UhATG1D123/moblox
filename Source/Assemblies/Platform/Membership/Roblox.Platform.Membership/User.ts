@@ -42,7 +42,7 @@ export class User implements IUser {
 	private static async connectIfNotConnected(): Task<void> {
 		return new Promise<void>(async (resumeFunction) => {
 			if (!this.connectionAttemptRunning) {
-				this.db = new PartialDatabase('RobloxMembership', 'root', 'Io9/9DEF');
+				this.db = new PartialDatabase('RobloxMembership', 'root', process.env.DB_PASSWORD || '');
 				this.connectionAttemptRunning = true;
 				const [didConnect, errMessage] = await this.db.Connect();
 				if (!didConnect) {
