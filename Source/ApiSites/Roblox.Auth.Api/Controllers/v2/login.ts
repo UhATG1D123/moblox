@@ -95,7 +95,6 @@ export default {
 			}
 
 			Response.cookie('.ROBLOSECURITY', SessionToken, {
-				domain: 'moblox.xyz',
 				path: '/',
 				httpOnly: true,
 				secure: true,
