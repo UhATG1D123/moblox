@@ -28,6 +28,17 @@ export default {
 			return Response.status(204).send();
 		}
 
+		if (Request.method === 'GET' && Request.query?.debug === '1') {
+			const Database = new PartialDatabase('RobloxMembership', '', '');
+			const [Connected, ConnectError] = await Database.Connect();
+			if (!Connected) {
+				console.error('[Moblox Auth Debug] Signup DB test failed:', ConnectError);
+				return Response.status(503).json({ ok: false, test: 'database_connection', connected: false, message: 'Database connection failed. Check Render logs for [Moblox Auth Debug].' });
+			}
+			await Database.Disconnect();
+			return Response.status(200).json({ ok: true, test: 'database_connection', connected: true, database: 'RobloxMembership' });
+		}
+
 		if (Request.method !== 'POST') {
 			return Response.status(405).json(CreateError('Use POST to create an account.'));
 		}
