@@ -51,13 +51,14 @@ export default {
 		}
 
 		try {
-			const [Found, , Credentials] = await Database.Query(
+			const [Found, QueryError, Credentials] = await Database.Query(
 				'SELECT u.`Id`, u.`Name`, u.`IsBanned`, p.`PasswordSalt`, p.`PasswordHash` FROM `robloxmembership`.`user` u INNER JOIN `robloxmembership`.`passwordcredential` p ON p.`UserId` = u.`Id` WHERE LOWER(u.`Name`) = LOWER(?) LIMIT 1',
 				[Username]
 			);
 
 			if (!Found) {
-				return Response.status(500).json(CreateError('We could not sign you in. Please try again.'));
+				console.error('[Moblox Auth] Login credential lookup failed:', QueryError);
+				return Response.status(500).json(CreateError('Sign-in could not check your account. Please try again.'));
 			}
 
 			if (!Credentials || Credentials.length !== 1 || Number(Credentials[0].IsBanned) !== 0) {
@@ -85,13 +86,14 @@ export default {
 				? Request.headers['user-agent'].slice(0, 1024)
 				: '';
 
-			const [SessionInserted] = await Database.Query(
+			const [SessionInserted, SessionError] = await Database.Query(
 				'INSERT INTO `robloxmembership`.`session` (`UserId`, `SessionToken`, `Location`, `UserAgent`, `Created`) VALUES (?, ?, ?, ?, ?)',
 				[Number(Credential.Id), SessionToken, 'Login', UserAgent, Now]
 			);
 
 			if (!SessionInserted) {
-				return Response.status(500).json(CreateError('We could not create your session.'));
+				console.error('[Moblox Auth] Login session creation failed:', SessionError);
+				return Response.status(500).json(CreateError('Your password was accepted, but we could not start your session. Please try again.'));
 			}
 
 			Response.cookie('.ROBLOSECURITY', SessionToken, {
