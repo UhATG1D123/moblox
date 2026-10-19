@@ -41,6 +41,7 @@
 // import Roblox.Api.Helpers.Web.Util.ROBLOX_Starter from './Roblox.Helpers/Roblox.Helpers/Roblox.Web.Util/Roblox.Server.Starter';
 
 import IServer, { NextFunction, Request, Response } from 'express';
+import SignupController from './ApiSites/Roblox.Auth.Api/Controllers/v2/signup';
 import { DFFlag, DFLog, DFString, FASTLOG, FASTLOG1F, FASTLOG2, FASTLOGS } from './Assemblies/Web/Util/Roblox.Web.Util/Logging/FastLog';
 import { DefaultApi404 } from './Assemblies/Web/Errors/Roblox.Web.Errors/DefaultApi404';
 import { DefaultAsp404 } from './Assemblies/Web/Errors/Roblox.Web.Errors/aspError404';
@@ -403,14 +404,7 @@ FastLogGlobal.Init();
 				Hosts['SetupCDN'],
 			),
 		);
-		await SystemSDK.Configure(
-			SystemSDK.MetadataBuilder(
-				RobloxWebsiteServer,
-				'/StaticPages/ApiSites/Roblox.Auth.Api',
-				'/Source/Bin/ApiSites/Roblox.Auth.Api/Controllers',
-				Hosts['AuthenticationHost'],
-			),
-		);
+		RobloxWebsiteServer.all('/v2/signup', SignupController.func);
 
 		await SystemSDK.Configure(
 			SystemSDK.MetadataBuilder(
