@@ -525,6 +525,7 @@ FastLogGlobal.Init();
 			),
 		);
 		RobloxWebsiteServer.use((request: Request, response: Response, next: NextFunction) => {
+			if (/^\/v[123]\/users\/\d+\/transactions(?:\/|$)/.test(request.path)) return EconomyApiServer(request, response, next);
 			if (/^\/v[123]\/catalog(?:\/|$)/.test(request.path) || /^\/v[123]\/bundles(?:\/|$)/.test(request.path) || /^\/v[123]\/assets(?:\/|$)/.test(request.path) || /^\/v[123]\/categories(?:\/|$)/.test(request.path) || /^\/v[123]\/subcategories(?:\/|$)/.test(request.path)) {
 				return CatalogApiServer(request, response, next);
 			}
