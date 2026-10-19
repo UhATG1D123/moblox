@@ -48,7 +48,7 @@ export default {
 	ApiGatewayHost: 'apis.sitetest4.robloxlabs.com',
 	ApiGatewayCDNHost: 'apis.rbxcdn.com',
 	DEPRECATED_CaptchaHost: 'captcha.sitetest4.robloxlabs.com',
-	AuthenticationHost: 'auth.sitetest4.robloxlabs.com',
+	AuthenticationHost: 'www.moblox.xyz',
 	LocaleHost: 'locale.sitetest4.robloxlabs.com',
 	AbTestingHost: 'abtesting.sitetest4.robloxlabs.com',
 	UsersHost: 'users.sitetest4.robloxlabs.com',
