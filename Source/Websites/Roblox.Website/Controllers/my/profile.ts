@@ -59,10 +59,6 @@ export default {
 				);
 				if (!UserUpdated) throw new Error(UserError);
 
-				const [CredentialTableReady, CredentialTableError] = await Database.Query(
-					'CREATE TABLE IF NOT EXISTS `robloxmembership`.`passwordcredential` (`UserId` INT NOT NULL, `UsernameNormalized` VARCHAR(20) NOT NULL, `PasswordSalt` CHAR(32) NOT NULL, `PasswordHash` CHAR(128) NOT NULL, `Created` DATETIME NOT NULL, PRIMARY KEY (`UserId`), UNIQUE KEY `UsernameNormalized_UNIQUE` (`UsernameNormalized`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin'
-				);
-				if (!CredentialTableReady) throw new Error(CredentialTableError);
 				const [CredentialUpdated, CredentialError] = await Database.Query(
 					'UPDATE `robloxmembership`.`passwordcredential` SET `UsernameNormalized` = ? WHERE `UserId` = ?',
 					[Username.toLowerCase(), AuthenticatedUser.Id]
