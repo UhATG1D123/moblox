@@ -525,7 +525,10 @@ FastLogGlobal.Init();
 				Hosts['AuthenticationHost'],
 			),
 		);
-		RobloxWebsiteServer.use(AuthApiServer);
+		RobloxWebsiteServer.use((request: Request, response: Response, next: NextFunction) => {
+			if (/^\/v[123](?:\/|$)/.test(request.path)) return AuthApiServer(request, response, next);
+			return next();
+		});
 		await SystemSDK.Configure(
 			SystemSDK.MetadataBuilder(
 				ApiGatewayServer,
