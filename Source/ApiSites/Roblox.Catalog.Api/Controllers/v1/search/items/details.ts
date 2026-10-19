@@ -7,7 +7,7 @@ export default {
 		if (request.method === 'OPTIONS') return response.send();
 		try {
 			const result = await axios.get('https://catalog.roblox.com' + request.url, {
-				headers: { ...request.headers, host: 'catalog.roblox.com' },
+				headers: { ...request.headers, host: 'catalog.roblox.com' } as any,
 				validateStatus: () => true,
 			});
 			const headers = JSON.parse(JSON.stringify(result.headers).split('roblox.com').join('sitetest4.robloxlabs.com'));
