@@ -42,6 +42,10 @@
 
 import IServer, { NextFunction, Request, Response } from 'express';
 import SignupController from './ApiSites/Roblox.Auth.Api/Controllers/v2/signup';
+import LoginController from './ApiSites/Roblox.Auth.Api/Controllers/v2/login';
+import LogoutController from './ApiSites/Roblox.Auth.Api/Controllers/v2/logout';
+import UsernameController from './ApiSites/Roblox.Auth.Api/Controllers/v2/username';
+import UsernamesController from './ApiSites/Roblox.Auth.Api/Controllers/v2/usernames';
 import { DFFlag, DFLog, DFString, FASTLOG, FASTLOG1F, FASTLOG2, FASTLOGS } from './Assemblies/Web/Util/Roblox.Web.Util/Logging/FastLog';
 import { DefaultApi404 } from './Assemblies/Web/Errors/Roblox.Web.Errors/DefaultApi404';
 import { DefaultAsp404 } from './Assemblies/Web/Errors/Roblox.Web.Errors/aspError404';
@@ -405,6 +409,10 @@ FastLogGlobal.Init();
 			),
 		);
 		RobloxWebsiteServer.all('/v2/signup', SignupController.func);
+		RobloxWebsiteServer.all('/v2/login', LoginController.func);
+		RobloxWebsiteServer.all('/v2/logout', LogoutController.func);
+		RobloxWebsiteServer.all('/v2/username', UsernameController.func);
+		RobloxWebsiteServer.all('/v2/usernames', UsernamesController.func);
 
 		await SystemSDK.Configure(
 			SystemSDK.MetadataBuilder(
