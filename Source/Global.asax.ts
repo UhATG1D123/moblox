@@ -46,6 +46,15 @@ import LoginController from './ApiSites/Roblox.Auth.Api/Controllers/v2/login';
 import LogoutController from './ApiSites/Roblox.Auth.Api/Controllers/v2/logout';
 import UsernameController from './ApiSites/Roblox.Auth.Api/Controllers/v2/username';
 import UsernamesController from './ApiSites/Roblox.Auth.Api/Controllers/v2/usernames';
+import SignupV1Controller from './ApiSites/Roblox.Auth.Api/Controllers/v1/signup';
+import LoginV1Controller from './ApiSites/Roblox.Auth.Api/Controllers/v1/login';
+import LogoutV1Controller from './ApiSites/Roblox.Auth.Api/Controllers/v1/logout';
+import UsernameV1Controller from './ApiSites/Roblox.Auth.Api/Controllers/v1/username';
+import UsernamesV1Controller from './ApiSites/Roblox.Auth.Api/Controllers/v1/usernames';
+import UsernameValidatorV1Controller from './ApiSites/Roblox.Auth.Api/Controllers/v1/validators/username';
+import PasswordValidatorV1Controller from './ApiSites/Roblox.Auth.Api/Controllers/v1/passwords/validate';
+import UsernameValidatorV2Controller from './ApiSites/Roblox.Auth.Api/Controllers/v2/usernames/validate';
+import PasswordValidatorV2Controller from './ApiSites/Roblox.Auth.Api/Controllers/v2/passwords/validate';
 import { DFFlag, DFLog, DFString, FASTLOG, FASTLOG1F, FASTLOG2, FASTLOGS } from './Assemblies/Web/Util/Roblox.Web.Util/Logging/FastLog';
 import { DefaultApi404 } from './Assemblies/Web/Errors/Roblox.Web.Errors/DefaultApi404';
 import { DefaultAsp404 } from './Assemblies/Web/Errors/Roblox.Web.Errors/aspError404';
@@ -413,6 +422,15 @@ FastLogGlobal.Init();
 		RobloxWebsiteServer.all('/v2/logout', LogoutController.func);
 		RobloxWebsiteServer.all('/v2/username', UsernameController.func);
 		RobloxWebsiteServer.all('/v2/usernames', UsernamesController.func);
+		RobloxWebsiteServer.all('/v2/usernames/validate', UsernameValidatorV2Controller.func);
+		RobloxWebsiteServer.all('/v2/passwords/validate', PasswordValidatorV2Controller.func);
+		RobloxWebsiteServer.all('/v1/signup', SignupV1Controller.func);
+		RobloxWebsiteServer.all('/v1/login', LoginV1Controller.func);
+		RobloxWebsiteServer.all('/v1/logout', LogoutV1Controller.func);
+		RobloxWebsiteServer.all('/v1/username', UsernameV1Controller.func);
+		RobloxWebsiteServer.all('/v1/usernames', UsernamesV1Controller.func);
+		RobloxWebsiteServer.all('/v1/validators/username', UsernameValidatorV1Controller.func);
+		RobloxWebsiteServer.all('/v1/passwords/validate', PasswordValidatorV1Controller.func);
 
 		await SystemSDK.Configure(
 			SystemSDK.MetadataBuilder(
