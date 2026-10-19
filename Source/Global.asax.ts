@@ -1279,7 +1279,7 @@ FastLogGlobal.Init();
 
 			let cookie = KeyValueMapping.GetValueFromCookieString('.ROBLOSECURITY', request.headers.cookie);
 			const authenticatedUser = await User.GetByCookie(cookie);
-			if (!authenticatedUser && cookie !== undefined) response.clearCookie('.ROBLOSECURITY', { domain: 'sitetest4.robloxlabs.com' });
+			if (!authenticatedUser && cookie !== undefined) response.clearCookie('.ROBLOSECURITY', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
 
 			if (request.headers['accept'] && request.headers['accept'].toLowerCase() === 'application/json')
 				return response.status(200).send({
