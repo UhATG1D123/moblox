@@ -1,101 +1,66 @@
-/*
-	FileName: asset.ts
-	Written By: Nikita Nikolaevich Petko
-	File Type: Module
-	Description: https://www.sitetest4.robloxlabs.com/asset/, Redirects to assetdelivery
-
-	All commits will be made on behalf of mfd-co to https://github.com/mfdlabs/robloxlabs.com
-
-	***
-
-	Copyright 2006-2021 ROBLOX
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-	https://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-
-	***
-*/
-
 import { Request, Response } from 'express';
-import { DFFlag, DFString } from '../../../Assemblies/Web/Util/Roblox.Web.Util/Logging/FastLog';
-import { User } from '../../../Assemblies/Platform/Membership/Roblox.Platform.Membership/User';
-
-// import { Roblox } from '../../../../Roblox.Api';
-// import fs from 'fs';
-// import a from 'axios';
+import { PartialDatabase } from '../../../Assemblies/Mssql/Roblox.Mssql.PartialDatabase/Implementation/PartialDatabase';
+import { KeyValueMapping } from '../../../Assemblies/Common/Mapping/Roblox.Common.Mapping/KeyValueMapping';
 
 export default {
 	method: 'all',
 	func: async (request: Request, response: Response) => {
-		const securityToken = request.cookies['.ROBLOSECURITY'];
-		const authenticatedUser = await User.GetByCookie(securityToken);
-		if (!authenticatedUser) {
-			if (securityToken !== undefined) response.clearCookie('.ROBLOSECURITY');
-			return response.redirect('/Login');
-		}
-		return response.render('Home', {
-			isUserAuthenicated: authenticatedUser !== null,
-			authenticatedUser: { ...authenticatedUser, LanguageCode: 'en_us', LanguageName: 'English', Theme: 'dark' } || null,
-			sessionUser: {
-				LanguageCode: 'en_us',
-				LanguageName: 'English',
-				Device: {
-					DeviceName: 'computer',
-					IsInApp: false,
-					IsDesktop: true,
-					IsPhone: false,
-					IsTablet: false,
-					IsConsole: false,
-					IsAndroidApp: false,
-					IsIosApp: false,
-					IsUWPApp: false,
-					IsXboxApp: false,
-					IsAmazonApp: false,
-					IsWin32App: false,
-					IsStudio: false,
-					IsGameClientBrowser: false,
-					IsIosDevice: false,
-					IsAndroidDevice: false,
-					IsUniversalApp: false,
-				},
-			},
-			globalMeta: {
-				Experiments: {
-					DisplayNamesEnabled: true,
-				},
-			},
-			pageMeta: {
-				banner: {
-					Enabled: DFFlag('IsBannerEnabled'),
-					Text: DFString('SiteBanner'),
-				},
-			},
-		});
-		// a.get(`https://www.roblox.com/home`, { headers: { ...req.headers, host: 'www.roblox.com' } })
-		// 	.then((re) => {
-		// 		const newbody = re.data.split('roblox.com').join('sitetest4.robloxlabs.com');
-		// 		const newheaders = JSON.parse(JSON.stringify(re.headers).split('roblox.com').join('sitetest4.robloxlabs.com'));
+		const SecurityToken = KeyValueMapping.GetValueFromCookieString('.ROBLOSECURITY', request.headers.cookie);
+		if (!SecurityToken) return response.redirect('/Login');
 
-		// 		return res.header(newheaders).send(newbody);
-		// 	})
-		// 	.catch((e) => {
-		// 		const newheaders = JSON.parse(JSON.stringify(e.response.headers).split('roblox.com').join('sitetest4.robloxlabs.com'));
-		// 		return res.header(newheaders).status(e.response.status).send(e.response.data);
-		// 	});
-		// let template = fs.readFileSync(
-		// 	Roblox.Api.Constants.RobloxDirectories.__iBaseDirectory + '/InternalCDN/Roblox.UserProfile.html',
-		// 	{ encoding: 'utf-8' },
-		// );
-		// template = template.split('<USERIDHERE>').join(userId.toString());
-		// return res.send(template);
+		const Database = new PartialDatabase('RobloxMembership', '', '');
+		const [Connected, ConnectError] = await Database.Connect();
+		if (!Connected) {
+			console.error('[Moblox Home] Database connection failed:', ConnectError);
+			return response.status(503).send('Moblox is temporarily unavailable. Please try again shortly.');
+		}
+
+		try {
+			const [SessionFound, SessionError, Sessions] = await Database.Query(
+				'SELECT u.`Id`, u.`Name`, u.`DisplayName`, u.`Description`, u.`AccountId` FROM `robloxmembership`.`session` s INNER JOIN `robloxmembership`.`user` u ON u.`Id` = s.`UserId` WHERE s.`SessionToken` = ? LIMIT 1',
+				[SecurityToken]
+			);
+			if (!SessionFound) throw new Error(SessionError);
+			if (!Sessions || Sessions.length !== 1) {
+				response.clearCookie('.ROBLOSECURITY', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
+				return response.redirect('/Login');
+			}
+
+			const User = Sessions[0];
+			const [ColumnFound, ColumnError, Columns] = await Database.Query(
+				"SHOW COLUMNS FROM `robloxaccounting`.`account` LIKE 'RobuxBalance'"
+			);
+			if (!ColumnFound) throw new Error(ColumnError);
+			if (!Columns || Columns.length === 0) {
+				const [ColumnAdded, AddColumnError] = await Database.Query(
+					'ALTER TABLE `robloxaccounting`.`account` ADD COLUMN `RobuxBalance` BIGINT NOT NULL DEFAULT 0'
+				);
+				if (!ColumnAdded) throw new Error(AddColumnError);
+			}
+
+			const [BalanceFound, BalanceError, Balances] = await Database.Query(
+				'SELECT COALESCE(`RobuxBalance`, 0) AS `RobuxBalance` FROM `robloxaccounting`.`account` WHERE `Id` = ? LIMIT 1',
+				[Number(User.AccountId)]
+			);
+			if (!BalanceFound) throw new Error(BalanceError);
+			const RobuxBalance = Balances && Balances.length ? Number(Balances[0].RobuxBalance) || 0 : 0;
+
+			return response.render('Home', {
+				isUserAuthenicated: true,
+				authenticatedUser: {
+					Id: Number(User.Id),
+					Name: String(User.Name),
+					DisplayName: String(User.DisplayName || User.Name),
+					Description: String(User.Description || ''),
+					RobuxBalance,
+				},
+				robuxBalance: RobuxBalance,
+			});
+		} catch (ErrorValue) {
+			console.error('[Moblox Home] Failed to load account:', ErrorValue instanceof Error ? ErrorValue.message : 'Unknown database error');
+			return response.status(500).send('We could not load your Moblox account. Please try again.');
+		} finally {
+			await Database.Disconnect();
+		}
 	},
 };
