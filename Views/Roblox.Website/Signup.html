@@ -889,18 +889,104 @@
 			};
 		</script>
 
-		<div
-			id="landing-page-container"
-			landing-page-container
-			use-experimentation-platform-for-ftux="true"
-			is-ftux-avatar-enabled="true"
-			ftux-avatar-version="2"
-			ftux-context-version="2"
-			is-always-captcha-sign-up-enabled="false"
-			is-captcha-v2-component-for-sign-up-enabled="true"
-			is-korea-id-verification-enabled="false"
-			is-signup-form-dark-theme-enabled="<%= globalMeta.Experiments.IsSignupFormDarkThemeEnabled %>"
-		></div>
+		<div id="landing-page-container">
+			<style>
+				.moblox-signup-page{max-width:760px;margin:28px auto;padding:0 16px;font-family:Arial,Helvetica,sans-serif;color:#333}
+				.moblox-signup-page h1{font-size:30px;text-align:center;margin:0 0 22px;font-weight:bold}
+				.moblox-signup-card{max-width:420px;margin:0 auto;background:#f2f2f2;border:1px solid #c7c7c7;padding:22px 26px;box-sizing:border-box}
+				.moblox-signup-row{margin:0 0 14px}
+				.moblox-signup-row label{display:block;font-size:13px;font-weight:bold;margin:0 0 5px}
+				.moblox-signup-row input,.moblox-signup-row select{width:100%;height:34px;box-sizing:border-box;padding:6px 8px;border:1px solid #aaa;background:#fff;font-size:14px}
+				.moblox-signup-birthday{display:flex;gap:8px}
+				.moblox-signup-birthday select{min-width:0;flex:1}
+				.moblox-signup-error{display:none;margin:0 0 14px;padding:9px 10px;border:1px solid #c94a48;background:#fbeeee;color:#a12622;font-size:13px;line-height:1.4;overflow-wrap:anywhere}
+				.moblox-signup-submit{display:block;width:100%;min-height:42px;margin:4px 0 0;border:1px solid #2b6da3;background:#377db5;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
+				.moblox-signup-submit:disabled{opacity:.65;cursor:wait}
+				.moblox-signup-footer{text-align:center;font-size:13px;margin:16px 0 0}
+				.moblox-signup-footer a{color:#1769aa}
+			</style>
+			<section class="moblox-signup-page">
+				<h1>Sign Up</h1>
+				<form class="moblox-signup-card" id="moblox-signup-form" novalidate>
+					<div class="moblox-signup-error" id="moblox-signup-error" role="alert" aria-live="polite"></div>
+					<div class="moblox-signup-row"><label for="moblox-username">Username</label><input id="moblox-username" name="username" autocomplete="username" minlength="3" maxlength="20" required /></div>
+					<div class="moblox-signup-row"><label for="moblox-password">Password</label><input id="moblox-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required /></div>
+					<div class="moblox-signup-row"><label>Birthday</label><div class="moblox-signup-birthday"><select id="moblox-birth-month" aria-label="Birth month" required><option value="">Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><select id="moblox-birth-day" aria-label="Birth day" required><option value="">Day</option></select><select id="moblox-birth-year" aria-label="Birth year" required><option value="">Year</option></select></div></div>
+					<div class="moblox-signup-row"><label for="moblox-gender">Gender</label><select id="moblox-gender" name="gender" required><option value="">Select</option><option value="2">Female</option><option value="1">Male</option></select></div>
+					<button class="moblox-signup-submit" id="moblox-signup-submit" type="submit">Sign Up</button>
+					<p class="moblox-signup-footer">Already have an account? <a href="/newlogin">Log In</a></p>
+				</form>
+			</section>
+			<script>
+				(function () {
+					var form = document.getElementById('moblox-signup-form');
+					if (!form) return;
+					var month = document.getElementById('moblox-birth-month');
+					var day = document.getElementById('moblox-birth-day');
+					var year = document.getElementById('moblox-birth-year');
+					var error = document.getElementById('moblox-signup-error');
+					var submit = document.getElementById('moblox-signup-submit');
+					var now = new Date();
+					for (var y = now.getFullYear(); y >= 1900; y--) {
+						var option = document.createElement('option');
+						option.value = String(y);
+						option.textContent = String(y);
+						year.appendChild(option);
+					}
+					function updateDays() {
+						var previous = day.value;
+						var count = month.value && year.value ? new Date(Number(year.value), Number(month.value), 0).getDate() : 31;
+						day.innerHTML = '<option value="">Day</option>';
+						for (var d = 1; d <= count; d++) {
+							var option = document.createElement('option');
+							option.value = String(d);
+							option.textContent = String(d);
+							day.appendChild(option);
+						}
+					if (previous && Number(previous) <= count) day.value = previous;
+					}
+					month.addEventListener('change', updateDays);
+					year.addEventListener('change', updateDays);
+					function showError(message) {
+						error.textContent = message;
+						error.style.display = 'block';
+						error.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+					}
+					form.addEventListener('submit', async function (event) {
+						event.preventDefault();
+						error.style.display = 'none';
+						var username = document.getElementById('moblox-username').value.trim();
+						var password = document.getElementById('moblox-password').value;
+						var m = month.value;
+						var d = day.value;
+						var y = year.value;
+						var gender = document.getElementById('moblox-gender').value;
+						if (!username || !password || !m || !d || !y || !gender) return showError('Please complete every field.');
+						if (!/^[A-Za-z0-9_]{3,20}$/.test(username) || username.startsWith('_') || username.endsWith('_') || (username.match(/_/g) || []).length > 1) return showError('Choose a username with 3–20 letters, numbers, or at most one underscore.');
+						if (password.length < 8 || password.length > 128 || password.trim().length === 0 || password.toLowerCase() === username.toLowerCase()) return showError('Choose a password at least 8 characters long that is not your username.');
+						var birthday = y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+						if (new Date(birthday + 'T00:00:00').getTime() > Date.now()) return showError('Enter a valid birthday.');
+						submit.disabled = true;
+						submit.textContent = 'Creating Account…';
+						try {
+							var response = await fetch('/v2/signup', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ username: username, password: password, birthday: birthday, gender: Number(gender), countryCode: 'US' }) });
+							var data = await response.json().catch(function () { return {}; });
+							if (response.ok && data.userId) {
+								window.location.assign('/');
+								return;
+							}
+							var message = data.errors && data.errors[0] && (data.errors[0].userFacingMessage || data.errors[0].message);
+							showError(message || (response.status === 404 ? 'Signup service not found. Please try again later.' : 'We could not create your account. Please try again.'));
+						} catch (e) {
+							showError('Could not connect to Moblox. Check your connection and try again.');
+						} finally {
+							submit.disabled = false;
+							submit.textContent = 'Sign Up';
+						}
+					});
+				})();
+			</script>
+		</div>
 
 		<div class="dark-theme">
 			<!--Bootstrap Footer React Component -->
