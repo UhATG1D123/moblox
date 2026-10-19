@@ -421,6 +421,7 @@ FastLogGlobal.Init();
 		);
 		RobloxWebsiteServer.all('/v2/signup', SignupController.func);
 		RobloxWebsiteServer.all('/v2/login', LoginController.func);
+		RobloxWebsiteServer.all('/auth/v2/login', LoginController.func);
 		RobloxWebsiteServer.all('/v2/logout', LogoutController.func);
 		RobloxWebsiteServer.all('/v2/username', UsernameController.func);
 		RobloxWebsiteServer.all('/v2/usernames', UsernamesController.func);
