@@ -62,8 +62,9 @@ export default {
 		}
 
 		const Database = new PartialDatabase('RobloxMembership', '', '');
-		const [Connected] = await Database.Connect();
+		const [Connected, ConnectError] = await Database.Connect();
 		if (!Connected) {
+			console.error('[Moblox Auth] Signup database connection failed:', ConnectError);
 			return Response.status(503).json(CreateError('Account creation is temporarily unavailable. Please try again.'));
 		}
 
@@ -136,7 +137,8 @@ export default {
 			});
 
 			return Response.status(201).json({ userId: UserId, username: Username });
-		} catch {
+		} catch (ErrorValue) {
+			console.error('[Moblox Auth] Signup query failed:', ErrorValue instanceof Error ? ErrorValue.message : 'Unknown database error');
 			if (InTransaction) await Database.Query('ROLLBACK');
 			return Response.status(500).json(CreateError('We could not create your account. Please try again.'));
 		} finally {
