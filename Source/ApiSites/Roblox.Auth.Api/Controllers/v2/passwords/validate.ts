@@ -1,33 +1,34 @@
-/*
-	FileName: LoadPlaceInfo.ashx.ts
-	Written By: Nikita Nikolaevich Petko
-	File Type: Module
-	Description: Load Place info script
-			
-	All commits will be made on behalf of mfd-co to https://github.com/mfdlabs/robloxlabs.com
+import { Request, Response } from 'express';
 
-	***
-
-	Copyright 2006-2021 ROBLOX
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-	https://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-
-	***
-*/
+interface IPasswordValidationRequest {
+	password?: unknown;
+	Password?: unknown;
+	username?: unknown;
+	Username?: unknown;
+}
 
 export default {
 	method: 'all',
-	func: (_req, res): void => {
-		return res.send({ valid: true });
+	func: (Request: Request, Response: Response) => {
+		if (Request.method === 'OPTIONS') return Response.status(204).send();
+		if (Request.method !== 'POST' && Request.method !== 'GET') {
+			return Response.status(405).json({ valid: false, errors: [{ message: 'Use GET or POST to validate a password.' }] });
+		}
+
+		const Body = (Request.method === 'GET' ? Request.query : Request.body || {}) as IPasswordValidationRequest;
+		const PasswordValue = Body.password ?? Body.Password;
+		const UsernameValue = Body.username ?? Body.Username;
+		const Password = typeof PasswordValue === 'string' ? PasswordValue : '';
+		const Username = typeof UsernameValue === 'string' ? UsernameValue.trim() : '';
+		const Errors: { message: string }[] = [];
+
+		if (Password.length < 8 || Password.length > 128 || Password.trim().length === 0) {
+			Errors.push({ message: 'Passwords must be between 8 and 128 characters.' });
+		}
+		if (Username && Password.toLowerCase() === Username.toLowerCase()) {
+			Errors.push({ message: 'Your password cannot be the same as your username.' });
+		}
+
+		return Response.status(200).json({ valid: Errors.length === 0, errors: Errors });
 	},
 };
