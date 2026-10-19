@@ -5,28 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Home - Moblox</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f5f6f8;color:#232527;font:16px Arial,sans-serif}.nav{height:64px;background:#fff;border-bottom:1px solid #e3e5e8;display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100% - 1100px)/2));gap:20px}.brand{font-weight:800;font-size:26px;letter-spacing:-1px;color:#232527;text-decoration:none}.brand span{color:#335fff}.navlinks{display:flex;align-items:center;gap:20px}.navlinks a{color:#30343b;text-decoration:none;font-weight:600}.account{display:flex;align-items:center;gap:14px}.balance{background:#f1f4ff;color:#234ad8;padding:9px 12px;border-radius:8px;font-weight:700;white-space:nowrap}.logout{border:0;background:#eee;padding:9px 12px;border-radius:7px;cursor:pointer;font-weight:700}.main{max-width:1100px;margin:36px auto;padding:0 20px}.welcome{background:#fff;border:1px solid #e2e5e9;border-radius:14px;padding:28px}.welcome h1{font-size:30px;margin:0 0 8px}.muted{color:#666d75}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}.tile{background:#fff;border:1px solid #e2e5e9;border-radius:12px;padding:22px;min-height:120px}.tile h2{font-size:18px;margin:0 0 8px}.tile a{color:#335fff;text-decoration:none;font-weight:700}.status{font-size:13px;color:#68707a;margin-top:12px}@media(max-width:650px){.nav{height:auto;min-height:64px;flex-wrap:wrap;padding:14px 18px}.navlinks{order:3;width:100%;gap:14px;flex-wrap:wrap}.account{margin-left:auto}.welcome h1{font-size:25px}}
+*{box-sizing:border-box}body{margin:0;background:#e3e3e3;color:#393b3d;font:13px Arial,Helvetica,sans-serif}.top{min-height:50px;background:#f7f7f7;border-bottom:1px solid #c8c8c8;display:flex;align-items:center;padding:0 max(16px,calc((100% - 970px)/2));gap:25px;flex-wrap:wrap}.logo{font-size:25px;font-weight:bold;letter-spacing:-1.4px;color:#333;text-decoration:none}.logo span{color:#777}.top nav{display:flex;gap:20px;align-items:center;flex:1}.top nav a{color:#444;text-decoration:none;font-weight:bold}.user-tools{display:flex;align-items:center;gap:12px}.balance{background:#f0f0f0;border:1px solid #ccc;padding:7px 9px;border-radius:3px;font-weight:bold;color:#555;white-space:nowrap}.logout{background:#fafafa;border:1px solid #bbb;border-radius:3px;padding:7px 10px;color:#444;font-weight:bold;cursor:pointer}.wrap{width:min(970px,calc(100% - 24px));margin:22px auto}.welcome{background:#fff;border:1px solid #c8c8c8;border-radius:3px;padding:22px;margin-bottom:16px}.welcome h1{font-size:22px;font-weight:normal;margin:0 0 8px}.muted{color:#777}.layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px}.side,.content{background:#fff;border:1px solid #c8c8c8;border-radius:3px}.side h2,.content h2{font-size:15px;margin:0;padding:11px 13px;background:#f4f4f4;border-bottom:1px solid #d3d3d3}.side a{display:block;padding:11px 13px;border-bottom:1px solid #eee;color:#2672a5;text-decoration:none}.side a:last-child{border-bottom:0}.tiles{padding:14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.tile{border:1px solid #ddd;background:#fafafa;padding:16px;min-height:100px}.tile h3{font-size:14px;margin:0 0 9px}.tile p{color:#777;line-height:1.45}.tile a{color:#2672a5;text-decoration:none;font-weight:bold}.status{padding:0 3px;margin-top:12px;color:#777}@media(max-width:650px){.top{padding:10px 12px;gap:14px}.top nav{order:3;width:100%;flex-basis:100%;gap:14px;flex-wrap:wrap}.user-tools{margin-left:auto}.layout{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header class="nav">
-<a class="brand" href="/home">moblox<span>.</span></a>
-<nav class="navlinks"><a href="/home">Home</a><a href="/catalog">Marketplace</a><a href="/transactions">Transactions</a><a href="/my/account">Settings</a></nav>
-<div class="account"><span class="balance" id="balance"><%= Number(robuxBalance || 0).toLocaleString('en-US') %> Mobux</span><button class="logout" id="logout">Log Out</button></div>
+<header class="top">
+<a class="logo" href="/home">moblox<span>.</span></a>
+<nav><a href="/home">Home</a><a href="/catalog">Catalog</a><a href="/transactions">Transactions</a><a href="/my/account">Settings</a></nav>
+<div class="user-tools"><span class="balance" id="balance"><%= Number(robuxBalance || 0).toLocaleString('en-US') %> Mobux</span><button class="logout" id="logout">Log Out</button></div>
 </header>
-<main class="main">
-<section class="welcome">
-<h1>Welcome, <%= authenticatedUser.DisplayName %>!</h1>
-<div class="muted">@<%= authenticatedUser.Name %></div>
-<p>Your Moblox account at a glance.</p>
-</section>
-<section class="grid">
-<div class="tile"><h2>Marketplace</h2><p class="muted">Explore avatar items and bundles.</p><a href="/catalog">Browse Marketplace →</a></div>
-<div class="tile"><h2>Your profile</h2><p class="muted">View your Moblox profile.</p><a href="/users/<%= authenticatedUser.Id %>/profile">View Profile →</a></div>
-<div class="tile"><h2>Transactions</h2><p class="muted">Review your recent activity.</p><a href="/transactions">View Transactions →</a></div>
-<div class="tile"><h2>Account settings</h2><p class="muted">Update your account details.</p><a href="/my/account">Manage Settings →</a></div>
-</section>
-<div class="status" id="status"></div>
+<main class="wrap">
+<section class="welcome"><h1>Welcome to Moblox, <%= authenticatedUser.DisplayName %>!</h1><div class="muted">@<%= authenticatedUser.Name %></div></section>
+<div class="layout">
+<aside class="side"><h2>Your Account</h2><a href="/users/<%= authenticatedUser.Id %>/profile">My Profile</a><a href="/my/account">Account Settings</a><a href="/transactions">Transactions</a><a href="/catalog">Marketplace</a></aside>
+<section class="content"><h2>What's happening?</h2><div class="tiles">
+<div class="tile"><h3>Marketplace</h3><p>Browse avatar items and bundles for your character.</p><a href="/catalog">Visit Catalog &raquo;</a></div>
+<div class="tile"><h3>Your Profile</h3><p>View your public Moblox profile and account details.</p><a href="/users/<%= authenticatedUser.Id %>/profile">View Profile &raquo;</a></div>
+<div class="tile"><h3>Transactions</h3><p>Check your recent account activity.</p><a href="/transactions">View Transactions &raquo;</a></div>
+<div class="tile"><h3>Settings</h3><p>Manage your account information and preferences.</p><a href="/my/account">Edit Settings &raquo;</a></div>
+</div></section>
+</div><div class="status" id="status"></div>
 </main>
 <script>
 document.getElementById('logout').addEventListener('click',async()=>{try{const r=await fetch('/v2/logout',{method:'POST',credentials:'same-origin'});if(r.ok)location.assign('/Login');else document.getElementById('status').textContent='Could not log out. Please try again.';}catch{document.getElementById('status').textContent='Connection error. Please try again.';}});
