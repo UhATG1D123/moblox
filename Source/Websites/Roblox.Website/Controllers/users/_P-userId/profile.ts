@@ -38,11 +38,11 @@ export default {
 	func: async (request: Request<{ userId: string }>, response: Response): Promise<void> => {
 		let cookie = KeyValueMapping.GetValueFromCookieString('.ROBLOSECURITY', request.headers.cookie);
 		const authenticatedUser = await User.GetByCookie(cookie);
-		if (!authenticatedUser && cookie !== undefined) response.clearCookie('.ROBLOSECURITY', { domain: 'sitetest4.robloxlabs.com' });
+		if (!authenticatedUser && cookie !== undefined) response.clearCookie('.ROBLOSECURITY', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
 		const user = await User.Get(parseInt(request.params.userId));
 		if (!user || user.IsBanned) return response.redirect('/request-error?code=404');
 		response.render('Profile', {
-			isUserAuthenicated: authenticatedUser !== null,
+			isUserAuthenicated: Boolean(authenticatedUser),
 			authenticatedUser:
 				{
 					...authenticatedUser,
@@ -52,7 +52,7 @@ export default {
 					CanAddUser: (Id: number) => false,
 					HasOutgoingFriendRequestForId: (Id: number) => false,
 					MayFollowUser: (Id: number) => false,
-					IsFollowing: (Id: number) => true,
+					IsFollowing: (Id: number) => false,
 					CanMessageUser: (Id: number) => false,
 					CanTradeWith: (Id: number) => false,
 					IsUserBlocked: (Id: number) => false,
@@ -65,8 +65,8 @@ export default {
 					LanguageCode: 'en_us',
 					LanguageName: 'English',
 					Theme: 'dark',
-					PreviousUserNames: ['nsg1', 'nsg2'],
-					IsFriendsWith: (Id: number) => true,
+					PreviousUserNames: [],
+					IsFriendsWith: (Id: number) => false,
 					HasOutgoingFriendRequestForId: (Id: number) => false,
 					CanAddUser: (Id: number) => false,
 					CanRecievePrivateMessages: () => true,
@@ -77,7 +77,7 @@ export default {
 					CsrfToken: 'test123',
 					ImageHash: '00cf1b4c991080f917030d1a42783f20',
 					FriendsCount: 0,
-					FollowersCount: 500000000,
+					FollowersCount: 0,
 					FollowingCount: 0,
 				} || null,
 			sessionUser: {
