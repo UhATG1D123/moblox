@@ -50,7 +50,7 @@ export default {
 		}
 
 		try {
-			const [Found, FindError, Credentials] = await Database.Query(
+			const [Found, , Credentials] = await Database.Query(
 				'SELECT u.`Id`, u.`Name`, u.`IsBanned`, p.`PasswordSalt`, p.`PasswordHash` FROM `robloxmembership`.`user` u INNER JOIN `robloxmembership`.`passwordcredential` p ON p.`UserId` = u.`Id` WHERE LOWER(u.`Name`) = LOWER(?) LIMIT 1',
 				[Username]
 			);
