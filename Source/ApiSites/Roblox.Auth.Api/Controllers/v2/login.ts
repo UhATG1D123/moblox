@@ -43,9 +43,10 @@ export default {
 		}
 
 		const Database = new PartialDatabase('RobloxMembership', '', '');
-		const [Connected] = await Database.Connect();
+		const [Connected, ConnectError] = await Database.Connect();
 
 		if (!Connected) {
+			console.error('[Moblox Auth] Login database connection failed:', ConnectError);
 			return Response.status(503).json(CreateError('Sign-in is temporarily unavailable.'));
 		}
 
@@ -106,7 +107,8 @@ export default {
 				userId: Number(Credential.Id),
 				username: String(Credential.Name),
 			});
-		} catch {
+		} catch (ErrorValue) {
+			console.error('[Moblox Auth] Login query failed:', ErrorValue instanceof Error ? ErrorValue.message : 'Unknown database error');
 			return Response.status(500).json(CreateError('We could not sign you in. Please try again.'));
 		} finally {
 			await Database.Disconnect();
