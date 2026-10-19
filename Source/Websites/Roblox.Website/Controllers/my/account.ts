@@ -32,6 +32,7 @@ import {
 	DYNAMIC_FASTSTRING,
 } from '../../../../Assemblies/Web/Util/Roblox.Web.Util/Logging/FastLog';
 import { User } from '../../../../Assemblies/Platform/Membership/Roblox.Platform.Membership/User';
+import { KeyValueMapping } from '../../../../Assemblies/Common/Mapping/Roblox.Common.Mapping/KeyValueMapping';
 
 // import { Roblox } from '../../../../Roblox.Api';
 // import fs from 'fs';
@@ -43,10 +44,15 @@ DYNAMIC_FASTSTRING('SiteBanner');
 export default {
 	method: 'all',
 	func: async (req, res) => {
-		const user = await User.Get(1);
+		const securityToken = KeyValueMapping.GetValueFromCookieString('.ROBLOSECURITY', req.headers.cookie);
+		const user = await User.GetByCookie(securityToken);
+		if (!user) {
+			if (securityToken !== undefined) res.clearCookie('.ROBLOSECURITY', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
+			return res.redirect('/Login');
+		}
 		res.render('Settings', {
-			isUserAuthenicated: user !== null,
-			authenticatedUser: { ...user, LanguageCode: 'en_us', LanguageName: 'English', Theme: 'dark' } || null,
+			isUserAuthenicated: true,
+			authenticatedUser: { ...user, LanguageCode: 'en_us', LanguageName: 'English', Theme: 'dark' },
 			sessionUser: {
 				LanguageCode: 'en_us',
 				LanguageName: 'English',
