@@ -529,6 +529,7 @@ FastLogGlobal.Init();
 			if (/^\/v[123]\/catalog(?:\/|$)/.test(request.path) || /^\/v[123]\/bundles(?:\/|$)/.test(request.path) || /^\/v[123]\/assets(?:\/|$)/.test(request.path) || /^\/v[123]\/categories(?:\/|$)/.test(request.path) || /^\/v[123]\/subcategories(?:\/|$)/.test(request.path)) {
 				return CatalogApiServer(request, response, next);
 			}
+			if (/^\/v1\/users\/authenticated\/?$/.test(request.path)) return UsersApiServer(request, response, next);
 			if (/^\/v[123](?:\/|$)/.test(request.path)) return AuthApiServer(request, response, next);
 			return next();
 		});
