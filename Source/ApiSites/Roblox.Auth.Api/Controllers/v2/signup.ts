@@ -139,7 +139,6 @@ export default {
 			InTransaction = false;
 
 			Response.cookie('.ROBLOSECURITY', SessionToken, {
-				domain: 'moblox.xyz',
 				path: '/',
 				httpOnly: true,
 				secure: true,
