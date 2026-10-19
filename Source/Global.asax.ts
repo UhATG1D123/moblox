@@ -525,6 +525,7 @@ FastLogGlobal.Init();
 				Hosts['AuthenticationHost'],
 			),
 		);
+		RobloxWebsiteServer.use(AuthApiServer);
 		await SystemSDK.Configure(
 			SystemSDK.MetadataBuilder(
 				ApiGatewayServer,
