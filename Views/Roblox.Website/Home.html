@@ -12,12 +12,12 @@
 <header class="top">
 <a class="logo" href="/home">moblox<span>.</span></a>
 <nav><a href="/home">Home</a><a href="/catalog">Catalog</a><a href="/transactions">Transactions</a><a href="/my/account">Settings</a></nav>
-<div class="user-tools"><span class="balance" id="balance"><%= Number(robuxBalance || 0).toLocaleString('en-US') %> Mobux</span><button class="logout" id="logout">Log Out</button></div>
+<div class="user-tools"><span class="balance" id="balance"><%= Number(robuxBalance || 0).toLocaleString('en-US') %> Robux</span><button class="logout" id="logout">Log Out</button></div>
 </header>
 <main class="wrap">
 <section class="welcome"><h1>Welcome to Moblox, <%= authenticatedUser.DisplayName %>!</h1><div class="muted">@<%= authenticatedUser.Name %></div></section>
 <div class="layout">
-<aside class="side"><h2>Your Account</h2><a href="/users/<%= authenticatedUser.Id %>/profile">My Profile</a><a href="/my/account">Account Settings</a><a href="/transactions">Transactions</a><a href="/catalog">Marketplace</a></aside>
+<aside class="side"><h2>Your Account</h2><a href="/users/<%= authenticatedUser.Id %>/profile">My Profile</a><a href="/my/profile">Edit Profile</a><a href="/my/avatar">Edit Avatar</a><a href="/my/account">Account Settings</a><a href="/transactions">Transactions</a><a href="/catalog">Marketplace</a></aside>
 <section class="content"><h2>What's happening?</h2><div class="tiles">
 <div class="tile"><h3>Marketplace</h3><p>Browse avatar items and bundles for your character.</p><a href="/catalog">Visit Catalog &raquo;</a></div>
 <div class="tile"><h3>Your Profile</h3><p>View your public Moblox profile and account details.</p><a href="/users/<%= authenticatedUser.Id %>/profile">View Profile &raquo;</a></div>
@@ -28,7 +28,7 @@
 </main>
 <script>
 document.getElementById('logout').addEventListener('click',async()=>{try{const r=await fetch('/v2/logout',{method:'POST',credentials:'same-origin'});if(r.ok)location.assign('/Login');else document.getElementById('status').textContent='Could not log out. Please try again.';}catch{document.getElementById('status').textContent='Connection error. Please try again.';}});
-async function refreshBalance(){try{const r=await fetch('/v1/users/authenticated',{credentials:'same-origin',cache:'no-store'});if(!r.ok)return;const d=await r.json();if(typeof d.robuxBalance==='number')document.getElementById('balance').textContent=d.robuxBalance.toLocaleString('en-US')+' Mobux';}catch{}}
+async function refreshBalance(){try{const r=await fetch('/v1/users/authenticated',{credentials:'same-origin',cache:'no-store'});if(!r.ok)return;const d=await r.json();if(typeof d.robuxBalance==='number')document.getElementById('balance').textContent=d.robuxBalance.toLocaleString('en-US')+' Robux';}catch{}}
 refreshBalance();setInterval(refreshBalance,10000);
 </script>
 </body>
