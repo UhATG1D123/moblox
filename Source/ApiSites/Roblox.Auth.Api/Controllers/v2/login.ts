@@ -52,7 +52,7 @@ export default {
 
 		try {
 			const [Found, , Credentials] = await Database.Query(
-				'SELECT u.`Id`, u.`Name`, u.`IsBanned`, p.`PasswordSalt`, p.`PasswordHash` FROM `robloxmembership`.`user` u INNER JOIN `robloxmembership`.`passwordcredential` p ON p.`UserId` = u.`Id` WHERE LOWER(u.`Name`) = LOWER(?) LIMIT 1',
+				'SELECT u.`Id`, u.`Name`, u.`DisplayName`, u.`IsBanned`, p.`PasswordSalt`, p.`PasswordHash` FROM `robloxmembership`.`user` u INNER JOIN `robloxmembership`.`passwordcredential` p ON p.`UserId` = u.`Id` WHERE LOWER(u.`Name`) = LOWER(?) LIMIT 1',
 				[Username]
 			);
 
@@ -103,8 +103,12 @@ export default {
 			});
 
 			return Response.status(200).json({
-				userId: Number(Credential.Id),
-				username: String(Credential.Name),
+				user: {
+					id: Number(Credential.Id),
+					name: String(Credential.Name),
+					displayName: String(Credential.DisplayName || Credential.Name),
+				},
+				twoStepVerificationData: null,
 			});
 		} catch (ErrorValue) {
 			console.error('[Moblox Auth] Login query failed:', ErrorValue instanceof Error ? ErrorValue.message : 'Unknown database error');
