@@ -7,6 +7,8 @@ const ScryptAsync = promisify(Scrypt);
 interface ILoginRequest {
 	username?: unknown;
 	Username?: unknown;
+	ctype?: unknown;
+	cvalue?: unknown;
 	password?: unknown;
 	Password?: unknown;
 }
@@ -32,7 +34,8 @@ export default {
 		}
 
 		const Body = (Request.body || {}) as ILoginRequest;
-		const UsernameValue = Body.username ?? Body.Username;
+		const LoginType = typeof Body.ctype === 'string' ? Body.ctype.toLowerCase() : '';
+		const UsernameValue = Body.username ?? Body.Username ?? (LoginType === '' || LoginType === 'username' ? Body.cvalue : undefined);
 		const PasswordValue = Body.password ?? Body.Password;
 
 		const Username = typeof UsernameValue === 'string' ? UsernameValue.trim() : '';
