@@ -1,47 +1,58 @@
-/*
-	FileName: LoadPlaceInfo.ashx.ts
-	Written By: Nikita Nikolaevich Petko
-	File Type: Module
-	Description: Load Place info script
-			
-	All commits will be made on behalf of mfd-co to https://github.com/mfdlabs/robloxlabs.com
+import { Request, Response } from 'express';
+import { PartialDatabase } from '../../../../Assemblies/Mssql/Roblox.Mssql.PartialDatabase/Implementation/PartialDatabase';
 
-	***
+interface IUsernameValidationRequest {
+	username?: unknown;
+	Username?: unknown;
+	birthday?: unknown;
+	Birthday?: unknown;
+	context?: unknown;
+}
 
-	Copyright 2006-2021 ROBLOX
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-	https://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-
-	***
-*/
-
-import a from 'axios';
+const UsernamePattern = /^[A-Za-z0-9_]{3,20}$/;
 
 export default {
 	method: 'all',
-	func: async (_req, res) => {
-		if (_req.method === 'OPTIONS') return res.send();
-		a.post('https://auth.roblox.com' + _req.url, _req.body, {
-			headers: { ..._req.headers, host: 'auth.roblox.com' },
-		})
-			.then((re) => {
-				const newheaders = JSON.parse(JSON.stringify(re.headers).split('roblox.com').join('sitetest4.robloxlabs.com'));
+	func: async (Request: Request, Response: Response) => {
+		if (Request.method === 'OPTIONS') return Response.status(204).send();
+		if (Request.method !== 'POST' && Request.method !== 'GET') {
+			return Response.status(405).json({ code: 'InvalidCharactersError', message: 'Use GET or POST to validate a username.' });
+		}
 
-				return res.header(newheaders).send(re.data);
-			})
-			.catch((e) => {
-				const newheaders = JSON.parse(JSON.stringify(e.response.headers).split('roblox.com').join('sitetest4.robloxlabs.com'));
-				return res.header(newheaders).status(e.response.status).send(e.response.data);
-			});
+		const Body = (Request.method === 'GET' ? Request.query : Request.body || {}) as IUsernameValidationRequest;
+		const UsernameValue = Body.username ?? Body.Username;
+		const Username = typeof UsernameValue === 'string' ? UsernameValue.trim() : '';
+		const Invalid = (code: string, message: string) => Response.status(200).json({ code, message });
+
+		if (!Username) return Invalid('InvalidCharactersError', 'Enter a username.');
+		if (Username.length < 3 || Username.length > 20) return Invalid('InvalidLengthError', 'Usernames must be 3–20 characters long.');
+		if (Username.startsWith('_') || Username.endsWith('_')) return Invalid('StartsOrEndsWithUnderscoreError', 'Usernames cannot start or end with an underscore.');
+		if ((Username.match(/_/g) || []).length > 1) return Invalid('TooManyUnderscoresError', 'Usernames can contain at most one underscore.');
+		if (!UsernamePattern.test(Username)) return Invalid('InvalidCharactersError', 'Usernames can only contain letters, numbers, and underscores.');
+
+		const Database = new PartialDatabase('RobloxMembership', '', '');
+		const [Connected, ConnectError] = await Database.Connect();
+		if (!Connected) {
+			console.error('[Moblox Auth] Username validation database connection failed:', ConnectError);
+			return Response.status(503).json({ code: 'UnknownError', message: 'Username validation is temporarily unavailable.' });
+		}
+
+		try {
+			const [Succeeded, QueryError, Users] = await Database.Query(
+				'SELECT `Id` FROM `robloxmembership`.`user` WHERE LOWER(`Name`) = LOWER(?) LIMIT 1',
+				[Username]
+			);
+			if (!Succeeded) {
+				console.error('[Moblox Auth] Username validation query failed:', QueryError);
+				return Response.status(500).json({ code: 'UnknownError', message: 'We could not validate that username.' });
+			}
+			if (Users.length > 0) return Invalid('AlreadyInUseError', 'That username is already in use.');
+			return Invalid('ValidUsername', 'Username is valid.');
+		} catch (ErrorValue) {
+			console.error('[Moblox Auth] Username validation failed:', ErrorValue instanceof Error ? ErrorValue.message : 'Unknown database error');
+			return Response.status(500).json({ code: 'UnknownError', message: 'We could not validate that username.' });
+		} finally {
+			await Database.Disconnect();
+		}
 	},
 };
