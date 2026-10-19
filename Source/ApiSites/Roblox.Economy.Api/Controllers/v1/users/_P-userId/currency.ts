@@ -5,7 +5,7 @@ export default {
 	method: 'all',
 	func: async (request: Request, response: Response): Promise<void> => {
 		const Match = request.originalUrl.match(/\/users\/(\d+)\/currency(?:\?|$)/);
-		const UserId = Number(request.params.userId || request.params['P-userId'] || Match?.[1]);
+		const UserId = Number(request.params['P-userId'] || Match?.[1]);
 		if (!Number.isSafeInteger(UserId) || UserId < 1) {
 			response.status(400).send({ errors: [{ code: 1, message: 'A valid userId is required.' }] });
 			return;
