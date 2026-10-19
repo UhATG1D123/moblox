@@ -28,7 +28,7 @@
     "@types/ws": "^8.2.0",
     "prettier": "^2.2.1",
     "typescript": "4.2.3",
-    "@types/node": "16.11.7",
+    "@types/node": "26.6.5",
     "@types/babel__traverse": "7.20.0"
   },
   "dependencies": {
