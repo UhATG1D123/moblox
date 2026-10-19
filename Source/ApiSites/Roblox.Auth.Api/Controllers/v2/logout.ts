@@ -47,6 +47,7 @@ export default {
 		}
 
 		Response.clearCookie('.ROBLOSECURITY', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
+		Response.clearCookie('.ROBLOSECURITY', { domain: 'moblox.xyz', path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
 		return Response.status(200).json({ success: true });
 	},
 };
