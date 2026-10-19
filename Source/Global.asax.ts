@@ -444,9 +444,6 @@ FastLogGlobal.Init();
 			),
 		);
 
-		if (process.env.PORT) {
-			return;
-		}
 		await SystemSDK.Configure(
 			SystemSDK.MetadataBuilder(
 				EphemeralCountersServiceServer,
@@ -1344,6 +1341,7 @@ FastLogGlobal.Init();
 			});
 		});
 
+		if (process.env.PORT) return;
 		await (async () => {
 			try {
 				const httpPort = isClosureTest || isNginx ? 8080 : 80;
