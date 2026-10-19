@@ -40,7 +40,7 @@ export default {
 		const authenticatedUser = await User.GetByCookie(securityToken);
 		if (!authenticatedUser) {
 			if (securityToken !== undefined) response.clearCookie('.ROBLOSECURITY');
-			return response.redirect('https://www.sitetest4.robloxlabs.com/Login');
+			return response.redirect('/Login');
 		}
 		return response.render('Home', {
 			isUserAuthenicated: authenticatedUser !== null,
