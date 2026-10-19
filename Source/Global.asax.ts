@@ -406,6 +406,15 @@ FastLogGlobal.Init();
 		await SystemSDK.Configure(
 			SystemSDK.MetadataBuilder(
 				RobloxWebsiteServer,
+				'/StaticPages/ApiSites/Roblox.Auth.Api',
+				'/Source/Bin/ApiSites/Roblox.Auth.Api/Controllers',
+				Hosts['AuthenticationHost'],
+			),
+		);
+
+		await SystemSDK.Configure(
+			SystemSDK.MetadataBuilder(
+				RobloxWebsiteServer,
 				'/StaticPages/Websites/Roblox.Website',
 				'/Source/Bin/Websites/Roblox.Website/Controllers',
 				Hosts['WebHost'],
