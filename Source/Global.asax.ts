@@ -211,6 +211,8 @@ FastLogGlobal.Init();
 		const CSRApiServer = IServer();
 		const CSRWebsiteServer = IServer();
 
+		RobloxWebsiteServer.use(IServer.json({ limit: '1mb' }));
+		RobloxWebsiteServer.use(IServer.urlencoded({ extended: true, limit: '1mb' }));
 		RobloxWebsiteServer.use(HostRewrite);
 		RobloxWebsiteServer.use(GlobalMiddleware);
 
