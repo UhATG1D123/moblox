@@ -83,6 +83,7 @@ import { Tomcat404 } from './Assemblies/Web/Errors/Roblox.Web.Errors/Tomcat';
 import { KeyValueMapping } from './Assemblies/Common/Mapping/Roblox.Common.Mapping/KeyValueMapping';
 import ArgsParser from 'args-parser';
 import { HostRewrite } from './HostRewrite';
+import { PartialDatabase } from './Assemblies/Mssql/Roblox.Mssql.PartialDatabase/Implementation/PartialDatabase';
 
 if (process.env.SSLKEYLOGFILE) {
 	const ssl = require('sslkeylog');
@@ -99,6 +100,16 @@ FastLogGlobal.Init();
 		const RobloxWebsiteServer = IServer();
 		RobloxWebsiteServer.get('/healthz', (_request: Request, response: Response) => {
 			response.status(200).type('text/plain').send('OK');
+		});
+		RobloxWebsiteServer.get('/__debug/signup-db', async (_request: Request, response: Response) => {
+			const Database = new PartialDatabase('RobloxMembership', '', '');
+			const [Connected, ConnectError] = await Database.Connect();
+			if (!Connected) {
+				console.error('[Moblox Auth Debug] Signup DB test failed:', ConnectError);
+				return response.status(503).json({ ok: false, test: 'database_connection', connected: false });
+			}
+			await Database.Disconnect();
+			return response.status(200).json({ ok: true, test: 'database_connection', connected: true });
 		});
 		const StaticCDNServer = IServer();
 		const JavaScriptCDNServer = IServer();
