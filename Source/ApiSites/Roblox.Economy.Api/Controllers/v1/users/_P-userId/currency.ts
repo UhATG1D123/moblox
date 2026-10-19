@@ -1,37 +1,20 @@
-/*
-	FileName: LoadPlaceInfo.ashx.ts
-	Written By: Nikita Nikolaevich Petko
-	File Type: Module
-	Description: Load Place info script
-			
-	All commits will be made on behalf of mfd-co to https://github.com/mfdlabs/robloxlabs.com
-
-	***
-
-	Copyright 2006-2021 ROBLOX
-
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-
-	https://www.apache.org/licenses/LICENSE-2.0
-
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-
-	***
-*/
-
-import { DFInt, DYNAMIC_FASTINTVARIABLE } from '../../../../../../Assemblies/Web/Util/Roblox.Web.Util/Logging/FastLog';
-
-DYNAMIC_FASTINTVARIABLE('TestCurrency', 0);
+import { Request, Response } from 'express';
+import { User } from '../../../../../../Assemblies/Platform/Membership/Roblox.Platform.Membership/User';
 
 export default {
 	method: 'all',
-	func: (_req, res): void => {
-		return res.send({ robux: DFInt('TestCurrency') });
+	func: async (request: Request, response: Response): Promise<void> => {
+		const Match = request.originalUrl.match(/\/users\/(\d+)\/currency(?:\?|$)/);
+		const UserId = Number(request.params.userId || request.params['P-userId'] || Match?.[1]);
+		if (!Number.isSafeInteger(UserId) || UserId < 1) {
+			response.status(400).send({ errors: [{ code: 1, message: 'A valid userId is required.' }] });
+			return;
+		}
+		const Account = await User.Get(UserId);
+		if (!Account) {
+			response.status(404).send({ errors: [{ code: 3, message: 'User not found.' }] });
+			return;
+		}
+		response.send({ robux: Number.isFinite(Account.RobuxBalance) ? Account.RobuxBalance : 0 });
 	},
 };
